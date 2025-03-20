@@ -1,0 +1,262 @@
+openapi: 3.0.3
+info:
+  title: Resume Screening System API
+  description: API documentation for the Resume Screening Microservices
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Local Development Server
+
+paths:
+  /parse-resume:
+    post:
+      summary: Extract date from resume and return parsed data as structured JSON response
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successfully parsed resume
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  experience:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/experience'
+                    nullable : true
+                  skills:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/skills'
+                    nullable : true
+                  education:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/education'
+                    nullable : true
+        '400':
+          description: Invalid file format
+
+  /keyword-matching:
+    post:
+      summary: Matches resume data against a job description
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resume_text:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/resume'
+                job_description:
+                  type: string
+      responses:
+        '200':
+          description: Keyword matching result
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/similarity'
+        '400':
+          description: Invalid input data
+
+  /score-resume:
+    post:
+      summary: Scores and ranks a resume based on job criteria
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                parsed_resumes:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/resume'
+                criteria:
+                  type: object
+                  properties:
+                    per_experience_year:
+                      type: number
+                      format: float
+                    minimum_experience:
+                      type: number
+                      format: float
+                    minimum_education_level:
+                      type: string
+                    required_skills:
+                      type: array
+                      items: 
+                        $ref: '#/components/schemas/required_skills'
+                        
+
+                  
+      responses:
+        '200':
+          description: Resume scoring results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  score:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/similarity'
+                    
+        '400':
+          description: Invalid request payload
+
+  /check-duplicate:
+    post:
+      summary: Checks if a resume is a duplicate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resumes:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/resume'
+      responses:
+        '200':
+          description: Duplicate check results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resume_id:
+                    type: string
+                  is_duplicate:
+                    type: boolean
+        '400':
+          description: Invalid input data
+
+
+components:
+  schemas:
+    experience:
+      type: object
+      properties:
+        title:
+          type: string
+        company:
+          type: string
+          nullable : true
+        duration:
+          type: string
+        technologies:
+          type: array
+          items:
+            type: string
+          nullable : true
+        description:
+          type: string
+          nullable : true
+    skills:
+      type: object
+      properties:
+        skill_name:
+          type: string
+        experience:
+          type: string
+        last_used:
+          type: string
+        level:
+          type: string
+    education:
+      type: object
+      properties:
+        degree:
+          type: string
+        major:
+          type: string
+        university:
+          type: string
+          nullable : true
+        school:
+          type: string
+          nullable : true
+        year:
+          type: string
+
+    similarity:
+      type: object
+      properties:
+        resume_id:
+          type: string
+        similarity_score:
+          type: number
+          format: float
+
+    resume:
+      type: object
+      properties:
+        resume_id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        experience:
+          type: array
+          items:
+            $ref: '#/components/schemas/experience'
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/skills'
+        education:
+          type: array
+          items:
+            $ref: '#/components/schemas/education'
+    job_description:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        skills:
+          type: array
+          items:
+            type: string
+        experience:
+          type: string
+        education:
+          type: string  
+    required_skills:
+      type: object
+      properties:
+        skill_name:
+          type: string
+        experience:
+          type: string
+        last_used:
+          type: string
+        level:
+          type: string  
