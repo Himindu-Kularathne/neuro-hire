@@ -1,0 +1,406 @@
+openapi: 3.0.3
+info:
+  title: Resume Screening System API
+  description: API documentation for the Resume Screening Main Backend
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Local Development Server
+
+paths:
+  /submit-resume:
+    post:
+      summary: Submit all the resumes in drag and drop segment to the AI agents
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successfully Uploaded and taken the result from the agent
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/resume_results'
+        '400':
+          description: Invalid file format
+
+  /admin/create-profile:
+    post:
+      summary: Create Admin Profiles (Company profile)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profile_name:
+                  type: string
+                profile_description:
+                  type: string
+                profile_email:
+                  type: string
+                profile_phone:
+                  type: string
+                profile_website:
+                  type: string
+                profile_address:
+                  type: string
+                profile_logo:
+                  type: string
+                profile_banner:
+                  type: string
+                profile_industry:
+                  type: string
+                profile_size:
+                  type: string
+                profile_type:
+                  type: string
+                profile_founded:
+                  type: string
+                profile_specialities:
+                  type: string
+                profile_social:
+                  type: string
+                profile_jobs:
+                  type: string
+                profile_reviews:
+                  type: string
+                profile_rating:
+                  type: string
+      responses:
+        '201':
+          description: Keyword matching result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  profile_id:
+                    type: string
+
+                
+        '400':
+          description: Invalid input data
+
+  /edit-profile:
+    put:
+      summary: Edit Admin Profiles (Company profile)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profile_id:
+                  type: string
+                profile_name:
+                  type: string
+                profile_description:
+                  type: string
+                profile_email:
+                  type: string
+                profile_phone:
+                  type: string
+                profile_website:
+                  type: string
+                profile_address:
+                  type: string
+                profile_logo:
+                  type: string
+                profile_banner:
+                  type: string
+                profile_industry:
+                  type: string
+                profile_size:
+                  type: string
+                profile_type:
+                  type: string
+                profile_founded:
+                  type: string
+                profile_specialities:
+                  type: string
+                profile_social:
+                  type: string
+                profile_jobs:
+                  type: string
+                profile_reviews:
+                  type: string
+                profile_rating:
+                  type: string
+      responses:
+        '200':
+          description: Successfully Updated the profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  profile_id:
+                    type: string
+        '400':
+          description: Invalid input data
+
+  /delete-profile:
+    delete:
+      summary: Delete Admin Profiles (Company profile)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profile_id:
+                  type: string
+      responses:
+        '200':
+          description: Successfully Deleted the profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  profile_id:
+                    type: string
+        '400':
+          description: Invalid input data
+
+
+#applications related endpoints
+  /sync-resumes: #need to define 
+  /send-email:
+     post:
+      summary: Send email to the candidate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                subject:
+                  type: string
+                message:
+                  type: string
+      responses:
+        '200':
+          description: Email sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+        '400':
+          description: Invalid input data
+
+
+
+#job related endpoints
+  /create-job:
+    post:
+      summary: Create a new job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                job_title:
+                  type: string
+                job_description:
+                  type: string
+                job_type:
+                  type: string
+                job_location:
+                  type: string
+                job_experience:
+                  type: string
+                job_skills:
+                  type: string
+                job_education:
+                  type: string
+                job_posted:
+                  type: string
+                job_deadline:
+                  type: string
+      responses:
+        '201':
+          description: Job created successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/job'
+        '400':
+          description: Invalid input data
+
+
+  /get-all-jobs:
+    get:
+      summary: Get all the jobs
+      responses:
+        '200':
+          description: List of all the jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/job'
+        '400':
+          description: Invalid input data
+  /update-job:
+    put:
+      summary: Update a job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                job_id:
+                  type: string
+                job_title:
+                  type: string
+                job_description:
+                  type: string
+                job_type:
+                  type: string
+                job_location:
+                  type: string
+                job_experience:
+                  type: string
+                job_skills:
+                  type: string
+                job_education:
+                  type: string
+                job_posted:
+                  type: string
+                job_deadline:
+                  type: string
+      responses:
+        '200':
+          description: Job updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+        '400':
+          description: Invalid input data
+  /delete-job:
+    delete:
+      summary: Delete a job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                job_id:
+                  type: string
+      responses:
+        '200':
+          description: Job deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+        '400':
+          description: Invalid input data
+
+
+
+components:
+  schemas:
+    resume_results:
+      type: object
+      properties:
+        resume_id:
+          type: string
+        result: 
+          type: boolean
+    profile:
+      type: object
+      properties:
+        profile_id:
+          type: string
+        profile_name:
+          type: string
+        profile_description:
+          type: string
+        profile_email:
+          type: string
+        profile_phone:
+          type: string
+        profile_website:
+          type: string
+        profile_address:
+          type: string
+        profile_logo:
+          type: string
+        profile_banner:
+          type: string
+        profile_industry:
+          type: string
+        profile_size:
+          type: string
+        profile_type:
+          type: string
+        profile_founded:
+          type: string
+        profile_specialities:
+          type: string
+        profile_social:
+          type: string
+        profile_jobs:
+          type: string
+        profile_reviews:
+          type: string
+        profile_rating:
+          type: string
+    job:
+      type: object
+      properties:
+        job_id:
+          type: string
+        job_title:
+          type: string
+        job_description:
+          type: string
+        job_type:
+          type: string
+        job_experience:
+          type: string
+        job_skills:
+          type: string
+        job_education:
+          type: string
+        job_posted:
+          type: string
+        job_deadline:
+          type: string
