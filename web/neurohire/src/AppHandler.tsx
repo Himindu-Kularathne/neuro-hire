@@ -1,11 +1,19 @@
+import Login from "./pages/login/login";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 const AppHandler = () => {
+
+    const router = createBrowserRouter([
+        {
+            path : '/',
+            element : <Login />,
+            errorElement : <div>404</div>,
+            children : []
+        }
+    ]);
+
     return (
-        <div>
-            <h1>NeuroHire</h1>
-            <p>NeuroHire is a platform that connects job seekers with employers in the field of neuroscience.</p>
-            <p>It is a project by the NeuroTechX community.</p>
-        </div>
+        <RouterProvider router={router} />   
     )
 }
 
