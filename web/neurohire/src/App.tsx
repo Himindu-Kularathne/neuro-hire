@@ -1,23 +1,15 @@
-// import Reeact, { useState } from 'react'
-// import AppHandler from './AppHandler'
-import Navbar from './conponent/NavBar'
-import './App.css'
-import Login from './pages/login/login'
-import { AuthProvider } from './context/AuthContext'
- 
+import React from "react";
+import Layout from "./layout/Layout";
+import AppHeader from "./layout/header/Header";
+import AppHandler from "./AppHandler";
+// import "./App.css";
+
 function App() {
-
- 
-
   return (
-    <>
-      <div>
-        <AuthProvider>
-        <Login  />
-        </AuthProvider>
-      </div>
-      </>
-  )
+    
+      <AppHandler />
+   
+  );
 }
 
-export default App
+export default App;
