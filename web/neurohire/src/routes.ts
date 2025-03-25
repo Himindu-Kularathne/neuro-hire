@@ -27,6 +27,13 @@ export const routes: RouteObjectWithRole[] = [
     element: React.createElement(View.homeView),
     allowRoles: [],
   },
+  {
+    path: "/jobs/owned",
+    text: "Jobs",
+    icon: undefined,
+    element: React.createElement(View.jobsView),
+    allowRoles: [],
+  },
 ];
 
 export const getActiveRoutes = (
