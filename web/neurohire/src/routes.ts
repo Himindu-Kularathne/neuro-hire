@@ -34,6 +34,13 @@ export const routes: RouteObjectWithRole[] = [
     element: React.createElement(View.jobsView),
     allowRoles: [],
   },
+  {
+    path: "/jobs/add",
+    text: "Add Job",
+    icon: undefined,
+    element: React.createElement(View.addJobView),
+    allowRoles: [],
+  }
 ];
 
 export const getActiveRoutes = (
@@ -47,4 +54,3 @@ export const getActiveRoutes = (
     };
   });
 };
-// Compare this snippet from web/neurohire/src/pages/login/login.tsx:

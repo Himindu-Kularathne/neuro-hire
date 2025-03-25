@@ -25,6 +25,11 @@ const AppHeader: React.FC = () => {
             Jobs
           </Button>
         </Link>
+        <Link   to="/jobs/add">
+          <Button color="inherit" className="nav-link" >
+            New Job
+          </Button>
+        </Link>
         </Box>
         <Box sx={{ display: "flex", gap: 2 }}>
           <Button color="secondary" variant="outlined">
