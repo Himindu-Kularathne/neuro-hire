@@ -5,9 +5,6 @@ import "./Header.css";
 import { Link } from "react-router-dom";
 
 const AppHeader: React.FC = () => {
-    
-   
-        
   return (
     <AppBar position="static" style={{ backgroundColor: "#fff" }}>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
