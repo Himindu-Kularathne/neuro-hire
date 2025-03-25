@@ -4,28 +4,29 @@ import Home from "./pages/home/Home";
 import { View } from "./view";
 
 export interface RouteObjectWithRole extends NonIndexRouteObject {
-    allowRoles: string[];
-    text: string;
-    icon: | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+  allowRoles: string[];
+  text: string;
+  icon:
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
     | undefined;
-    children?: RouteObjectWithRole[];
+  children?: RouteObjectWithRole[];
 }
 
 export const routes: RouteObjectWithRole[] = [
-    {
-        path: "/",
-        text: "Collections",
-        icon: undefined,
-        element: React.createElement(View.firstView),
-        allowRoles: [],
-    },
-     {
-        path: "/home",
-        text: "Home",
-        icon: undefined,
-        element: React.createElement(Home),
-        allowRoles: [],
-    }
+  {
+    path: "/",
+    text: "Collections",
+    icon: undefined,
+    element: React.createElement(View.firstView),
+    allowRoles: [],
+  },
+  {
+    path: "/home",
+    text: "Home",
+    icon: undefined,
+    element: React.createElement(View.homeView),
+    allowRoles: [],
+  },
 ];
 
 export const getActiveRoutes = (
