@@ -47,10 +47,4 @@ class ChromaDBService:
         doc_ids = [str(doc) for sublist in doc_ids for doc in sublist if doc]
 
         return doc_ids if doc_ids else [""]
-    
-    def get_all_documents(self):
-        results = self.collection.query(
-            query_texts="",
-            n_results=100
-        )
-        return results['documents']
+ 

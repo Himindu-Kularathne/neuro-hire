@@ -52,11 +52,3 @@ async def query_documents(request: QueryRequest):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-#get entries based on text input
-@app.get("/search/{query}", response_model=List[DocumentResponse])
-async def search_documents(query: str):
-    try:
-        results = chroma_service.query_documents(query)
-        return results
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
