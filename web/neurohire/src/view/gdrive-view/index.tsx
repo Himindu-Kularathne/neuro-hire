@@ -14,6 +14,9 @@ export default function GDrive() {
   const [folderResponse, setFolderResponse] = useState(null);
   const [fileResponse, setFileResponse] = useState(null);
 
+  // Handle this as a variable in the future.
+  const folderId = "1v4rccTc5VzL1Gol-gWb6ch1sNZI76zyR";
+
   const handleFolderCreate = async () => {
     const formData = new FormData();
     formData.append("folder_name", folderName);
@@ -30,6 +33,7 @@ export default function GDrive() {
   const handleFileUpload = async () => {
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("folder_id", folderId);
 
     const response = await fetch("http://127.0.0.1:8000/upload-cv", {
       method: "POST",

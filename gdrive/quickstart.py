@@ -64,7 +64,7 @@ def main():
     # TODO(developer) - Handle errors from drive API.
     print(f"An error occurred: {error}")
 
-def upload_file(file_name):
+def upload_file(file_name,folder_id):
   
   temp_file_path = f"temp_{file_name.filename}"
   with open(temp_file_path,"wb") as buffer:
@@ -88,8 +88,8 @@ def upload_file(file_name):
   
   try:
     service = build("drive","v3",credentials = creds)
-    file_metadata = {"name":file_name.filename}
-    media = MediaFileUpload(temp_file_path,mimetype = "image/jpeg")
+    file_metadata = {"name":file_name.filename,"parents":[folder_id]}
+    media = MediaFileUpload(temp_file_path,mimetype = "image/jpeg",resumable=True)
     # pylint: disable=maybe-no-member
     file = (
       service.files()
