@@ -14,7 +14,8 @@ from googleapiclient.http import MediaFileUpload
 
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ["https://www.googleapis.com/auth/drive.metadata.readonly"]
+SCOPES = ["https://www.googleapis.com/auth/drive.file"]
+
 
 
 def main():
@@ -62,11 +63,25 @@ def main():
     print(f"An error occurred: {error}")
 
 def multipart_upload():
-  creds,_ = google.auth.default()
+  creds = None
+  if os.path.exists("token.json"):
+    creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+
+  if not creds or not creds.valid:
+    if creds and creds.expired and creds.refresh_token:
+      creds.refresh(Request())
+    else:
+      flow = InstalledAppFlow.from_client_secrets_file(
+          "credentials.json", SCOPES
+      )
+      creds = flow.run_local_server(port=0)
+
+    with open("token.json", "w") as token:
+      token.write(creds.to_json())
   
   try:
     service = build("drive","v3",credentials = creds)
-    file_metadata = {"name":"download.jped"}
+    file_metadata = {"name":"download.jpeg"}
     media = MediaFileUpload("download.jpeg",mimetype = "image/jpeg")
     # pylint: disable=maybe-no-member
     file = (
@@ -78,7 +93,11 @@ def multipart_upload():
   except HttpError as error:
     print(f"An error occured: {error}")
     file = None
-  return file.get("id")
+  if file:
+    return file.get("id")
+  else:
+    return None
+
 
 if __name__ == "__main__":
   choice = input("Enter '1' to list files, Enter '2' to upload image:")
