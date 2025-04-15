@@ -1,5 +1,5 @@
-from fastapi import FastAPI
-from quickstart import create_folder,multipart_upload;
+from fastapi import FastAPI,UploadFile,File,Form
+from quickstart import create_folder,upload_file;
 
 app = FastAPI()
 
@@ -8,11 +8,11 @@ def root():
     return {"message":"Google drive service is running"}
 
 @app.post("/create-folder")
-def create_drive_folder():
-    folder_id = create_folder()
+def create_drive_folder(folder_name:str = Form(...)):
+    folder_id = create_folder(folder_name)
     return {"folderId": folder_id}
 
 @app.post("/upload-cv")
-def upload_cv():
-    file_id = multipart_upload()
+def upload_cv(file:UploadFile = File(...)):
+    file_id = upload_file(file)
     return{"fileId":file_id}

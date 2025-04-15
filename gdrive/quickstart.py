@@ -12,6 +12,8 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
 
+import shutil
+
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/drive.file"]
@@ -62,7 +64,12 @@ def main():
     # TODO(developer) - Handle errors from drive API.
     print(f"An error occurred: {error}")
 
-def multipart_upload():
+def upload_file(file_name):
+  
+  temp_file_path = f"temp_{file_name.filename}"
+  with open(temp_file_path,"wb") as buffer:
+    shutil.copyfileobj(file_name.file,buffer)
+
   creds = None
   if os.path.exists("token.json"):
     creds = Credentials.from_authorized_user_file("token.json", SCOPES)
@@ -81,8 +88,8 @@ def multipart_upload():
   
   try:
     service = build("drive","v3",credentials = creds)
-    file_metadata = {"name":"download.jpeg"}
-    media = MediaFileUpload("download.jpeg",mimetype = "image/jpeg")
+    file_metadata = {"name":file_name.filename}
+    media = MediaFileUpload(temp_file_path,mimetype = "image/jpeg")
     # pylint: disable=maybe-no-member
     file = (
       service.files()
@@ -98,7 +105,7 @@ def multipart_upload():
   else:
     return None
   
-def create_folder():
+def create_folder(folder_name):
   
   creds = None
 
@@ -121,7 +128,7 @@ def create_folder():
 
     service = build("drive", "v3", credentials=creds)
     file_metadata = {
-        "name": "Pictures",
+        "name": folder_name,
         "mimeType": "application/vnd.google-apps.folder",
     }
 
@@ -138,7 +145,7 @@ if __name__ == "__main__":
   if choice == "1":
     main()
   elif choice == "2":
-    multipart_upload()
+    upload_file()
   elif choice == "3":
     create_folder()
   else:
