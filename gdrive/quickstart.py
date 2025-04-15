@@ -97,14 +97,50 @@ def multipart_upload():
     return file.get("id")
   else:
     return None
+  
+def create_folder():
+  
+  creds = None
 
+  if os.path.exists("token.json"):
+    creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+
+  if not creds or not creds.valid:
+    if creds and creds.expired and creds.refresh_token:
+      creds.refresh(Request())
+    else:
+      flow = InstalledAppFlow.from_client_secrets_file(
+          "credentials.json", SCOPES
+      )
+      creds = flow.run_local_server(port=0)
+
+    with open("token.json", "w") as token:
+      token.write(creds.to_json())
+
+  try:
+
+    service = build("drive", "v3", credentials=creds)
+    file_metadata = {
+        "name": "Pictures",
+        "mimeType": "application/vnd.google-apps.folder",
+    }
+
+    file = service.files().create(body=file_metadata, fields="id").execute()
+    print(f'Folder ID: "{file.get("id")}".')
+    return file.get("id")
+
+  except HttpError as error:
+    print(f"An error occurred: {error}")
+    return None
 
 if __name__ == "__main__":
-  choice = input("Enter '1' to list files, Enter '2' to upload image:")
+  choice = input("Enter '1' to list files, Enter '2' to upload image, Enter '3' to create folder:")
   if choice == "1":
     main()
   elif choice == "2":
     multipart_upload()
+  elif choice == "3":
+    create_folder()
   else:
     print("Wrong choice mister!")
   
