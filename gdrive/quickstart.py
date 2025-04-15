@@ -6,6 +6,13 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+import google.auth
+
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaFileUpload
+
+
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/drive.metadata.readonly"]
 
@@ -54,6 +61,31 @@ def main():
     # TODO(developer) - Handle errors from drive API.
     print(f"An error occurred: {error}")
 
+def multipart_upload():
+  creds,_ = google.auth.default()
+  
+  try:
+    service = build("drive","v3",credentials = creds)
+    file_metadata = {"name":"download.jped"}
+    media = MediaFileUpload("download.jpeg",mimetype = "image/jpeg")
+    # pylint: disable=maybe-no-member
+    file = (
+      service.files()
+      .create(body=file_metadata,media_body = media,fields="id")
+      .execute()
+    )
+    print(f'File ID: {file.get("id")}')
+  except HttpError as error:
+    print(f"An error occured: {error}")
+    file = None
+  return file.get("id")
 
 if __name__ == "__main__":
-  main()
+  choice = input("Enter '1' to list files, Enter '2' to upload image:")
+  if choice == "1":
+    main()
+  elif choice == "2":
+    multipart_upload()
+  else:
+    print("Wrong choice mister!")
+  
