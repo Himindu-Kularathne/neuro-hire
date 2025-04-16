@@ -1,99 +1,135 @@
-import React, { useState } from "react";
-import {
-  Container,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Box,
-} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { gapi } from "gapi-script";
 
-export default function GDrive() {
-  const [folderName, setFolderName] = useState("");
+const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+const SCOPES = "https://www.googleapis.com/auth/drive.file";
+const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
+
+function App() {
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [token, setToken] = useState(null);
+  const [folderUrl, setFolderUrl] = useState("");
+  const [folderId, setFolderId] = useState("");
   const [file, setFile] = useState(null);
-  const [folderResponse, setFolderResponse] = useState(null);
-  const [fileResponse, setFileResponse] = useState(null);
 
-  // Handle this as a variable in the future.
-  const folderId = "1v4rccTc5VzL1Gol-gWb6ch1sNZI76zyR";
+  useEffect(() => {
+    function start() {
+      gapi.client
+        .init({
+          apiKey: API_KEY,
+          clientId: CLIENT_ID,
+          discoveryDocs: DISCOVERY_DOCS,
+          scope: SCOPES,
+        })
+        .then(() => {
+          const authInstance = gapi.auth2.getAuthInstance();
+          const isSigned = authInstance.isSignedIn.get();
+          setIsSignedIn(isSignedIn);
+          if (isSignedIn) {
+            const currentUser = authInstance.currentUser.get();
+            const accessToken = currentUser.getAuthResponse().access_token;
+            setToken(accessToken);
+          }
+        })
+        .catch((err: any) => {
+          console.error("gapi init error", err);
+        });
+    }
 
-  const handleFolderCreate = async () => {
-    const formData = new FormData();
-    formData.append("folder_name", folderName);
+    gapi.load("client:auth2", start);
+  }, []);
 
-    const response = await fetch("http://127.0.0.1:8000/create-folder", {
-      method: "POST",
-      body: formData,
+  const signIn = () => {
+    const authInstance = gapi.auth2.getAuthInstance();
+    authInstance.signIn().then((user) => {
+      const accessToken = user.getAuthResponse().access_token;
+      console.log("Access Token: ", accessToken);
+      setToken(accessToken);
+      setIsSignedIn(true);
     });
-
-    const data = await response.json();
-    setFolderResponse(data.folderId);
   };
 
-  const handleFileUpload = async () => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("folder_id", folderId);
+  const extractFolderId = (url) => {
+    const match = url.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : "";
+  };
 
-    const response = await fetch("http://127.0.0.1:8000/upload-cv", {
+  const handleUpload = async () => {
+    if (!file || !folderId) return alert("Select a file and paste a valid folder link.");
+
+    const metadata = {
+      name: file.name,
+      parents: [folderId],
+    };
+
+    const form = new FormData();
+    form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+    form.append("file", file);
+
+    const res = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id", {
       method: "POST",
-      body: formData,
+      headers: new Headers({ Authorization: `Bearer ${token}` }),
+      body: form,
     });
 
-    const data = await response.json();
-    setFileResponse(data.fileId);
+    const result = await res.json();
+    alert(`Uploaded file with ID: ${result.id}`);
   };
+
+  const handleCreateFolder = async () => {
+    if (!folderId) return alert("Paste a valid folder link first.");
+
+    const metadata = {
+      name: "New Subfolder",
+      mimeType: "application/vnd.google-apps.folder",
+      parents: [folderId],
+    };
+
+    const res = await fetch("https://www.googleapis.com/drive/v3/files", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(metadata),
+    });
+
+    const result = await res.json();
+    alert(`Created folder with ID: ${result.id}`);
+  };
+
+  useEffect(() => {
+    console.log("Token changed:", token);
+  }, [token]);
   return (
-    <Container maxWidth="sm" sx={{ mt: 5 }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-        <Typography variant="h5" gutterBottom>
-          Google Drive Uploader
-        </Typography>
+    <div style={{ padding: 20 }}>
+      <h2>Google Drive Integration</h2>
 
-        {/* Folder Name Input */}
-        <Box sx={{ mt: 2 }}>
-          <TextField
-            fullWidth
-            label="Folder Name"
-            variant="outlined"
-            value={folderName}
-            onChange={(e) => setFolderName(e.target.value)}
-          />
-          <Button
-            variant="contained"
-            sx={{ mt: 2 }}
-            onClick={handleFolderCreate}
-          >
-            Create Folder
-          </Button>
-          {folderResponse && (
-            <Typography sx={{ mt: 1 }} color="success.main">
-              Folder created with ID: {folderResponse}
-            </Typography>
-          )}
-        </Box>
-
-        {/* File Upload Input */}
-        <Box sx={{ mt: 4 }}>
+      {!isSignedIn ? (
+        <button onClick={signIn}>Sign in with Google</button>
+      ) : (
+        <>
           <input
-            type="file"
-            onChange={(e) => setFile(e.target.files[0])}
-            style={{ marginBottom: "8px" }}
+            type="text"
+            placeholder="Paste Google Drive Folder Link"
+            onChange={(e) => {
+              setFolderUrl(e.target.value);
+              setFolderId(extractFolderId(e.target.value));
+            }}
+            style={{ width: "100%", margin: "10px 0", padding: 8 }}
           />
-          <Button
-            variant="contained"
-            onClick={handleFileUpload}
-            disabled={!file}
-          >
-            Upload File
-          </Button>
-          {fileResponse && (
-            <Typography sx={{ mt: 1 }} color="success.main">
-              File uploaded with ID: {fileResponse}
-            </Typography>
-          )}
-        </Box>
-      </Paper>
-    </Container>
+
+          <input type="file" onChange={(e) => setFile(e.target.files[0])} style={{ marginBottom: 10 }} />
+
+          <div style={{ display: "flex", gap: 10 }}>
+            <button onClick={handleUpload}>Upload File</button>
+            <button onClick={handleCreateFolder}>Create Folder</button>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
+
+export default App;
