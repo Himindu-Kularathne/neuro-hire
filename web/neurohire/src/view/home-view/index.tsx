@@ -3,9 +3,11 @@ import { useDropzone } from "react-dropzone";
 import { Box, Typography, Paper, Button, List, ListItem, ListItemText, IconButton } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { extractTextFromFile } from "../../utils/cv-parser";
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Handle file drop
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -24,11 +26,24 @@ export default function Home() {
   });
 
   // Handle submit - print all names of pdfs
-    const handledSubmit = () => {
-        files.forEach((file) => {
-        console.log(file.name);
-        });
-    };
+  const handledSubmit = async () => {
+    setLoading(true); // Set loading state
+  
+    try {
+      for (const file of files) {
+        // Extract text from the file
+        const text = await extractTextFromFile(file);
+        
+        // Now call your sendCvToBackend function with the extracted text
+        console.log("Extracted text from file:", file.name, text);
+      }
+      // Optionally, reset loading state after all files are processed
+      setLoading(false); 
+    } catch (error) {
+      console.error("Error during file processing:", error);
+      setLoading(false); // Reset loading on error
+    }
+  };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mt: 5 }}>
