@@ -34,6 +34,15 @@ function App() {
       size: "large",
     });
 
+    window.google.accounts.id.prompt((notification: google.accounts.id.PromptMomentNotification) => {
+      if (notification.isNotDisplayed()) {
+        console.log("One Tap not displayed:", notification.getNotDisplayedReason());
+      }
+      if (notification.isSkippedMoment()) {
+        console.log("User skipped One Tap");
+      }
+    });
+
     // Optional auto prompt
     // window.google.accounts.id.prompt();
   }, []);
@@ -61,11 +70,14 @@ function App() {
     return match ? match[1] : "";
   };
 
+  const HARDCODED_FOLDER_ID = "16s_GojXO_OULSpOmNaul952oVZrPm-Wm";
+
   const handleUpload = async () => {
     if (!file || !token) return alert("Select a file and paste a valid folder link.");
 
     const metadata = {
       name: file.name,
+      parents: [HARDCODED_FOLDER_ID],
     };
 
     const form = new FormData();
