@@ -1,19 +1,26 @@
-var express = require("express");
-var cors = require("cors");
-var app = express();
+const express = require('express');
+const bodyParser = require('body-parser');
+const errorHandler = require('./middlewares/errorHandler');
+const profileRoutes = require('./routes/profileRoutes');
+const { log } = require('./utils/logger');
 
-// cors
-app.use(cors());
-// test endpoint
+const app = express();
+const port = 3000;
 
+app.use(bodyParser.json());
 
-app.get("/", function (req, res) {
-    res.send("Hello World!");
-    }
-);
-
-// start server
-app.listen(3000, function () {
-    console.log("Server is running on port 3000");
+//--- health check ---
+app.get('/', (req, res) => {
+  res.status(200).json({ message : "upstream service is healthy" });
 });
 
+// Routes
+app.use('/api/profile', profileRoutes);
+
+// Error Handler
+app.use(errorHandler);
+
+// Start server
+app.listen(port, () => {
+  log(`Server is running on http://localhost:${port}`);
+});
