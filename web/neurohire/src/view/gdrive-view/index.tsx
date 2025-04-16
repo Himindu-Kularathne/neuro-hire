@@ -7,60 +7,65 @@ const SCOPES = "https://www.googleapis.com/auth/drive.file";
 const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
 
 function App() {
+  const [token, setToken] = useState<string | null>(null);
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [token, setToken] = useState(null);
-  const [folderUrl, setFolderUrl] = useState("");
   const [folderId, setFolderId] = useState("");
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [folderName, setFolderName] = useState("");
 
   useEffect(() => {
-    function start() {
-      gapi.client
-        .init({
-          apiKey: API_KEY,
-          clientId: CLIENT_ID,
-          discoveryDocs: DISCOVERY_DOCS,
-          scope: SCOPES,
-        })
-        .then(() => {
-          const authInstance = gapi.auth2.getAuthInstance();
-          const isSigned = authInstance.isSignedIn.get();
-          setIsSignedIn(isSignedIn);
-          if (isSignedIn) {
-            const currentUser = authInstance.currentUser.get();
-            const accessToken = currentUser.getAuthResponse().access_token;
-            setToken(accessToken);
-          }
-        })
-        .catch((err: any) => {
-          console.error("gapi init error", err);
-        });
-    }
+    // Load GAPI client
+    gapi.load("client", () => {
+      gapi.client.init({
+        apiKey: API_KEY,
+        discoveryDocs: DISCOVERY_DOCS,
+      });
+    });
 
-    gapi.load("client:auth2", start);
+    // Initialize GIS
+    window.google.accounts.id.initialize({
+      client_id: CLIENT_ID,
+      callback: handleCredentialResponse,
+    });
+
+    // Show button
+    window.google.accounts.id.renderButton(document.getElementById("googleSignInDiv")!, {
+      theme: "outline",
+      size: "large",
+    });
+
+    // Optional auto prompt
+    // window.google.accounts.id.prompt();
   }, []);
 
-  const signIn = () => {
-    const authInstance = gapi.auth2.getAuthInstance();
-    authInstance.signIn().then((user) => {
-      const accessToken = user.getAuthResponse().access_token;
-      console.log("Access Token: ", accessToken);
-      setToken(accessToken);
-      setIsSignedIn(true);
+  const handleCredentialResponse = async (response: any) => {
+    const jwt = response.credential;
+    console.log("JWT:", jwt);
+
+    // Exchange JWT for access token (requires backend), or request token directly using `token client`
+    const tokenClient = window.google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      callback: (tokenResponse) => {
+        setToken(tokenResponse.access_token);
+        setIsSignedIn(true);
+        console.log("Access token:", tokenResponse.access_token);
+      },
     });
+
+    tokenClient.requestAccessToken();
   };
 
-  const extractFolderId = (url) => {
+  const extractFolderId = (url: string) => {
     const match = url.match(/\/folders\/([a-zA-Z0-9_-]+)/);
     return match ? match[1] : "";
   };
 
   const handleUpload = async () => {
-    if (!file || !folderId) return alert("Select a file and paste a valid folder link.");
+    if (!file || !token) return alert("Select a file and paste a valid folder link.");
 
     const metadata = {
       name: file.name,
-      parents: [folderId],
     };
 
     const form = new FormData();
@@ -78,12 +83,9 @@ function App() {
   };
 
   const handleCreateFolder = async () => {
-    if (!folderId) return alert("Paste a valid folder link first.");
-
     const metadata = {
-      name: "New Subfolder",
+      name: folderName,
       mimeType: "application/vnd.google-apps.folder",
-      parents: [folderId],
     };
 
     const res = await fetch("https://www.googleapis.com/drive/v3/files", {
@@ -96,35 +98,30 @@ function App() {
     });
 
     const result = await res.json();
+    console.log("RESULT", result);
     alert(`Created folder with ID: ${result.id}`);
   };
 
-  useEffect(() => {
-    console.log("Token changed:", token);
-  }, [token]);
   return (
     <div style={{ padding: 20 }}>
       <h2>Google Drive Integration</h2>
 
       {!isSignedIn ? (
-        <button onClick={signIn}>Sign in with Google</button>
+        <div id="googleSignInDiv"></div>
       ) : (
         <>
           <input
             type="text"
-            placeholder="Paste Google Drive Folder Link"
-            onChange={(e) => {
-              setFolderUrl(e.target.value);
-              setFolderId(extractFolderId(e.target.value));
-            }}
+            placeholder="Folder Name"
+            onChange={(e) => setFolderName(e.target.value)}
             style={{ width: "100%", margin: "10px 0", padding: 8 }}
           />
 
-          <input type="file" onChange={(e) => setFile(e.target.files[0])} style={{ marginBottom: 10 }} />
+          <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} style={{ marginBottom: 10 }} />
+          <button onClick={handleCreateFolder}>Create Folder</button>
 
           <div style={{ display: "flex", gap: 10 }}>
             <button onClick={handleUpload}>Upload File</button>
-            <button onClick={handleCreateFolder}>Create Folder</button>
           </div>
         </>
       )}
