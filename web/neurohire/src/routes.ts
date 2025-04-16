@@ -1,6 +1,5 @@
 import React from "react";
 import { RouteObject, NonIndexRouteObject } from "react-router-dom";
-import Home from "./pages/home/Home";
 import { View } from "./view";
 
 export interface RouteObjectWithRole extends NonIndexRouteObject {
@@ -40,7 +39,14 @@ export const routes: RouteObjectWithRole[] = [
     icon: undefined,
     element: React.createElement(View.addJobView),
     allowRoles: [],
-  }
+  },
+  {
+    path: "/jobs/gdrive",
+    text: "GDrive",
+    icon: undefined,
+    element: React.createElement(View.gDriveView),
+    allowRoles: [],
+  },
 ];
 
 export const getActiveRoutes = (
