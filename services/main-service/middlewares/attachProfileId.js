@@ -18,8 +18,6 @@ const attachProfileId = async (req, res, next) => {
         .json({ message: "Profile not found for this user" });
     }
 
-    console.log(rows[0].profile_id);
-
     req.profileId = rows[0].profile_id;
     next();
   } catch (err) {
