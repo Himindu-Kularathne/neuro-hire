@@ -34,12 +34,14 @@ const AppHeader: React.FC = () => {
           </Link>
         </Box>
         <Box sx={{ display: "flex", gap: 2 }}>
-          <Button color="secondary" variant="outlined">
-            Sign in
-          </Button>
-          <Button color="secondary" variant="contained">
-            Get Started
-          </Button>
+          {/* profile pic using mui*/}
+          <img
+            src="https://via.placeholder.com/40"
+            alt="Profile"
+            className="profile-pic"
+          />
+         
+
         </Box>
       </Toolbar>
     </AppBar>

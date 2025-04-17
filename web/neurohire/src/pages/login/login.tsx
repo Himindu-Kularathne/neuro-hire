@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Modal, message } from "antd";
-import { doSignInWithEmailAndPassword, doCreateUserWithEmailAndPassword } from "../../auth";
 import "./login.css";
+import { login } from "../../api/auth/login";
+import { useAuth } from "../../context/AuthContext";
 
 const Login: React.FC = () => {
+  const {setIsAuthenticated} = useAuth();
   const [isLoginVisible, setLoginVisible] = useState(false);
   const [isRegisterVisible, setRegisterVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -13,8 +15,10 @@ const Login: React.FC = () => {
     setLoading(true);
     console.log('calling login function')
     try {
-      await doSignInWithEmailAndPassword(values.email, values.password);
-      message.success("Login successful!");
+      // function calls here
+      login(values.email, values.password);
+      messageApi.success("Login successful!");
+      setIsAuthenticated(true);
       setLoginVisible(false);
     } catch (error: any) {
       message.error(error.message);
@@ -25,7 +29,7 @@ const Login: React.FC = () => {
   const handleRegister = async (values: any) => {
     setLoading(true);
     try {
-      await doCreateUserWithEmailAndPassword(values.email, values.password);
+      // function calls here
       message.success("Registration successful!");
       setRegisterVisible(false);
     } catch (error: any) {
