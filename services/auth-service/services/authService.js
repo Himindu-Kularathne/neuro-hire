@@ -66,11 +66,7 @@ const refreshTokenFlow = async (token) => {
 
     if (!tokens.length) throw new Error("Token not found");
 
-    const newAccessToken = generateAccessToken({
-      id: payload.id,
-      email: payload.email,
-      role: payload.role,
-    });
+    const newAccessToken = generateAccessToken(payload.user);
 
     return { accessToken: newAccessToken };
   } catch (err) {
