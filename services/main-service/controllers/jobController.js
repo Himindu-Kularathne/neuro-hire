@@ -1,35 +1,46 @@
-const jobService = require('../services/jobService');
+const jobService = require("../services/jobService");
 
 const createJob = async (req, res, next) => {
-    try {
-        const result = await jobService.insertJobWithSkills(req.body);
-        res.status(201).json({ message: 'Job inserted successfully', insertId: result.insertId });
-    } catch (err) {
-        next(err);
-    }
-}
+  try {
+    const profileId = req.profileId;
+    const job = {
+      ...req.body,
+      profile_id: profileId,
+    };
+
+    const result = await jobService.insertJobWithSkills(job);
+    res
+      .status(201)
+      .json({
+        message: "Job inserted successfully",
+        insertId: result.insertId,
+      });
+  } catch (err) {
+    next(err);
+  }
+};
 
 const getAllJobs = async (req, res, next) => {
-    try {
-        const profileId = req.params.profileId;
-        const jobs = await jobService.getAllJobs(profileId);
-        res.status(200).json(jobs);
-    } catch (err) {
-        next(err);
-    }
-}
+  try {
+    const profileId = req.profileId;
+    const jobs = await jobService.getAllJobs(profileId);
+    res.status(200).json(jobs);
+  } catch (err) {
+    next(err);
+  }
+};
 
 const updateJob = async (req, res, next) => {
-    try {
-        const jobId = req.params.jobId;
-        const updatedJob = await jobService.updateJob(jobId, req.body);
-        if (!updatedJob) {
-            return res.status(404).json({ message: 'Job not found' });
-        }
-        res.status(200).json({ message: 'Job updated successfully' });
-    } catch (err) {
-        next(err);
+  try {
+    const jobId = req.params.jobId;
+    const updatedJob = await jobService.updateJob(jobId, req.body);
+    if (!updatedJob) {
+      return res.status(404).json({ message: "Job not found" });
     }
-}
+    res.status(200).json({ message: "Job updated successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
 
-module.exports = { createJob , getAllJobs , updateJob};
+module.exports = { createJob, getAllJobs, updateJob };
