@@ -5,6 +5,8 @@ const attachProfileId = async (req, res, next) => {
   try {
     const email = req.user.email;
 
+    console.log("Email from token:", email);
+
     const [rows] = await db.execute(
       "SELECT profile_id FROM user_accounts WHERE email = ?",
       [email]
@@ -15,6 +17,8 @@ const attachProfileId = async (req, res, next) => {
         .status(404)
         .json({ message: "Profile not found for this user" });
     }
+
+    console.log(rows[0].profile_id);
 
     req.profileId = rows[0].profile_id;
     next();

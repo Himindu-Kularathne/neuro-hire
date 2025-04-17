@@ -20,7 +20,7 @@ const getAllProfiles = async (req, res, next) => {
 
 const getProfile = async (req, res, next) => {
     try {
-        const profileId = req.params.profileId;
+        const profileId = req.profileId;
         const profile = await profileService.getProfile(profileId);
         if (!profile) {
             return res.status(404).json({ message: 'Profile not found' });
@@ -33,7 +33,7 @@ const getProfile = async (req, res, next) => {
 
 const updateProfile = async (req, res, next) => {
     try {
-        const profileId = req.params.profileId;
+        const profileId = req.profileId;
         const updatedProfile = await profileService.updateProfile(profileId, req.body);
         if (!updatedProfile) {
             return res.status(404).json({ message: 'Profile not found' });

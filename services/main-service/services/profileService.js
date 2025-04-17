@@ -3,13 +3,12 @@ const db = require('../db/mysql');
 const insertProfile = async (profile) => {
   const query = `
     INSERT INTO profile (
-      profile_id, profile_name, profile_description, profile_email,
+      profile_name, profile_description, profile_email,
       profile_phone, profile_website, profile_address, profile_logo, profile_banner
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
-    profile.profile_id,
     profile.profile_name,
     profile.profile_description,
     profile.profile_email,
