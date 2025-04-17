@@ -3,4 +3,3 @@ const log = (message) => {
   };
   
 module.exports = { log };
-  
