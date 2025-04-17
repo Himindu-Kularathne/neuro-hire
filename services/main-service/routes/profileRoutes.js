@@ -8,6 +8,6 @@ profileRouter.post('/', profileController.createProfile);
 // profileRouter.get('/', profileController.getAllProfiles);
 profileRouter.get('/', authenticateToken, attachProfileId, profileController.getProfile);
 profileRouter.put('/', authenticateToken, attachProfileId, profileController.updateProfile);
-profileRouter.delete('/', authenticateToken, attachProfileId, profileController.deleteProfile);
+profileRouter.patch('/', authenticateToken, attachProfileId, profileController.deleteProfile);
 
 module.exports = profileRouter;

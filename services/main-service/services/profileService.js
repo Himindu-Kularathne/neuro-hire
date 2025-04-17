@@ -66,7 +66,7 @@ const updateProfile = async (profileId, profile) => {
 }
 
 const deleteProfile = async (profileId) => {
-    const query = 'DELETE FROM profile WHERE profile_id = ?';
+    const query = 'UPDATE profile SET active = 0 WHERE profile_id = ?';
     const [result] = await db.execute(query, [profileId]);
     return result.affectedRows > 0;
 }

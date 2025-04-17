@@ -46,7 +46,8 @@ const updateProfile = async (req, res, next) => {
 
 const deleteProfile = async (req, res, next) => {
     try {
-        const profileId = req.params.profileId;
+        const profileId = req.profileId;
+        console.log(profileId);
         const deletedProfile = await profileService.deleteProfile(profileId);
         if (!deletedProfile) {
             return res.status(404).json({ message: 'Profile not found' });
@@ -55,6 +56,7 @@ const deleteProfile = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
+      
 }
 
 module.exports = { createProfile , getAllProfiles, getProfile, updateProfile, deleteProfile };
