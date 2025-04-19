@@ -12,15 +12,15 @@ export interface RouteObjectWithRole extends NonIndexRouteObject {
 }
 
 export const routes: RouteObjectWithRole[] = [
+  // {
+  //   path: "/",
+  //   text: "Collections",
+  //   icon: undefined,
+  //   element: React.createElement(View.firstView),
+  //   allowRoles: [],
+  // },
   {
     path: "/",
-    text: "Collections",
-    icon: undefined,
-    element: React.createElement(View.firstView),
-    allowRoles: [],
-  },
-  {
-    path: "/home",
     text: "Home",
     icon: undefined,
     element: React.createElement(View.homeView),
@@ -34,6 +34,20 @@ export const routes: RouteObjectWithRole[] = [
     allowRoles: [],
   },
   {
+    path: "/my-account",
+    text: "Account",
+    icon: undefined,
+    element: React.createElement(View.accountView),
+    allowRoles: [],
+  },
+  {
+    path: "/my-account/notifications",
+    text: "Notifications",
+    icon: undefined,
+    element: React.createElement(View.notificationsView),
+    allowRoles: [],
+  },
+  {
     path: "/jobs/add",
     text: "Add Job",
     icon: undefined,
@@ -41,7 +55,7 @@ export const routes: RouteObjectWithRole[] = [
     allowRoles: [],
   },
   {
-    path: "/jobs/gdrive",
+    path: "/gdrive",
     text: "GDrive",
     icon: undefined,
     element: React.createElement(View.gDriveView),

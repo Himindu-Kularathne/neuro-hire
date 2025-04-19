@@ -20,18 +20,31 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { APP_DATA } from "../../utils/constants";
-import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const AppHeader: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedView, setSelectedView] = useState<string>("Home");
+
+  const navigation = useNavigate();
 
   const toggleDrawer = (open: boolean) => () => {
     setDrawerOpen(open);
   };
 
+  const handleMenuItemClick = (view: string) => {
+    navigation(`/${view}`);
+    toggleDrawer(false)(); // Close the drawer after selecting a menu item
+  };
+
   return (
     <>
-      <AppBar position="static" elevation={1} sx={{ bgcolor: "#ffffff", color: "#333" }}>
+      <AppBar
+        position="static"
+        elevation={1}
+        sx={{ bgcolor: "#ffffff", color: "#333" }}
+      >
         <Toolbar sx={{ justifyContent: "space-between" }}>
           <Typography
             variant="h6"
@@ -42,16 +55,14 @@ const AppHeader: React.FC = () => {
 
           <Box sx={{ display: "flex", gap: 2 }}>
             {[
-              { label: "Home", path: "/home" },
-              { label: "Jobs", path: "/jobs/owned" },
-              { label: "New Job", path: "/jobs/add" },
-              { label: "GDrive", path: "/jobs/gdrive" },
-              { label: "Settings", path: "/settings" },
+              { label: "Home", view: "Home", path: "/" },
+              { label: "Jobs", view: "Jobs", path: "jobs/owned" },
+              { label: "New Job", view: "NewJob", path: "jobs/add" },
+              { label: "GDrive", view: "GDrive", path: "gdrive" },
+              { label: "Settings", view: "Settings", path: "settings" },
             ].map((nav) => (
               <Button
                 key={nav.label}
-                component={Link}
-                to={nav.path}
                 sx={{
                   color: "#333",
                   fontWeight: 500,
@@ -60,6 +71,7 @@ const AppHeader: React.FC = () => {
                     backgroundColor: "#f0f0f0",
                   },
                 }}
+                onClick={() => handleMenuItemClick(nav.path)}
               >
                 {nav.label}
               </Button>
@@ -85,7 +97,13 @@ const AppHeader: React.FC = () => {
       {/* Drawer with Icons */}
       <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
         <Box sx={{ width: 260, p: 2 }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <Typography variant="h6">Profile</Typography>
             <IconButton onClick={toggleDrawer(false)}>
               <CloseIcon />
@@ -94,28 +112,32 @@ const AppHeader: React.FC = () => {
           <Divider sx={{ my: 2 }} />
 
           <List>
-            <ListItem button>
+            {/* Links in the Drawer */}
+            <ListItem button onClick={() => handleMenuItemClick("my-account")}>
               <ListItemIcon>
                 <AccountCircleIcon />
               </ListItemIcon>
               <ListItemText primary="My Account" />
             </ListItem>
 
-            <ListItem button>
+            <ListItem
+              button
+              onClick={() => handleMenuItemClick("notifications")}
+            >
               <ListItemIcon>
                 <NotificationsIcon />
               </ListItemIcon>
               <ListItemText primary="Notifications" />
             </ListItem>
 
-            <ListItem button>
+            <ListItem button onClick={() => handleMenuItemClick("preferences")}>
               <ListItemIcon>
                 <SettingsIcon />
               </ListItemIcon>
               <ListItemText primary="Preferences" />
             </ListItem>
 
-            <ListItem button>
+            <ListItem button onClick={() => handleMenuItemClick("logout")}>
               <ListItemIcon>
                 <LogoutIcon />
               </ListItemIcon>
