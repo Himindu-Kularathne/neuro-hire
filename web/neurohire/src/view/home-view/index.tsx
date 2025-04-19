@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import {
   Box,
@@ -15,10 +15,13 @@ import {
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { extractTextFromFile } from "../../utils/cv-parser";
+import { useUser } from "../../context/UserContext";
+import { getProfile } from "../../api/main/profile/profileManager";
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const {profile,setProfile} =  useUser();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
@@ -49,6 +52,31 @@ export default function Home() {
     }
     setLoading(false);
   };
+
+  //--- fetch profile data ---
+  const fetchProfileData = async () => {
+    try {
+      const response =  getProfile();
+      if (response) {
+        setProfile(response);
+        console.log("Profile data fetched successfully:", profile);
+      } else {
+        console.error("Failed to fetch profile data");
+      }
+      
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfileData();
+  }
+  , []);
+
+
+
+
 
   return (
     <Box

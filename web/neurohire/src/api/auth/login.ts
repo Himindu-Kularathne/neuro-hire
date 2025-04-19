@@ -5,14 +5,20 @@ export async function login(email: string, password: string) {
     throw new Error("Email and password are required");
   }
 
-  return fetchApi("http://localhost:3001/api/auth/login", "POST", {
-    email,
-    password,
-  }).then((response) => {
-    if (response.accessToken) {
-      localStorage.setItem("accessToken", response.accessToken);
-      localStorage.setItem("user", JSON.stringify(response.user));
+  try {
+    const responseData = await fetchApi("http://localhost:3001/api/auth/login", "POST", {
+      email,
+      password,
+    });
+    if (responseData?.accessToken ) {
+      localStorage.setItem("accessToken", responseData.accessToken);
+      // localStorage.setItem("user", JSON.stringify(responseData.user));
+    } else {
+      console.warn("Login response missing accessToken or user");
     }
-    return response;
-  });
+    return responseData;
+  } catch (error: any) {
+    console.error("Login failed:", error.message);
+    throw error;
+  }
 }

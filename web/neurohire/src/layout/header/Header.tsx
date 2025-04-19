@@ -34,8 +34,9 @@ const AppHeader: React.FC = () => {
   };
 
   const handleMenuItemClick = (view: string) => {
+    setSelectedView(view);
     navigation(`/${view}`);
-    toggleDrawer(false)(); // Close the drawer after selecting a menu item
+    toggleDrawer(false)(); 
   };
 
   return (
@@ -55,7 +56,7 @@ const AppHeader: React.FC = () => {
 
           <Box sx={{ display: "flex", gap: 2 }}>
             {[
-              { label: "Home", view: "Home", path: "/" },
+              { label: "Home", view: "Home", path: "" },
               { label: "Jobs", view: "Jobs", path: "jobs/owned" },
               { label: "New Job", view: "NewJob", path: "jobs/add" },
               { label: "GDrive", view: "GDrive", path: "gdrive" },

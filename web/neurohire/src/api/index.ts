@@ -11,12 +11,24 @@ export async function fetchApi(
       "Content-Type": "application/json",
       Authorization: accessToken ? `Bearer ${accessToken}` : "",
     },
+
     body: body ? JSON.stringify(body) : null,
   });
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+  const responseClone = response.clone();
+  let responseData = null;
+
+  try {
+    responseData = await responseClone.json();
+  } catch (e) {
+    console.error("No JSON response body");
   }
 
-  return response.json();
+  if (!response.ok) {
+    const errorMessage =
+      responseData?.message || `HTTP error! status: ${response.status}`;
+    throw new Error(errorMessage);
+  }
+
+  return responseData; // Return parsed response instead of the raw response
 }

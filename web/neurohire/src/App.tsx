@@ -1,13 +1,15 @@
 import AppHandler from "./AppHandler";
 import { AuthProvider } from "./context/AuthContext";
+import { UserProvider } from "./context/UserContext";
 // import "./App.css";
 
 function App() {
   return (
     <AuthProvider>
-      <AppHandler />
+      <UserProvider>
+        <AppHandler />
+      </UserProvider>
     </AuthProvider>
-   
   );
 }
 

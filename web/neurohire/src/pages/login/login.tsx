@@ -33,9 +33,13 @@ const Login: React.FC = () => {
 
     setLoading(true);
     try {
-      await login(email, password);
-      setSnackbar({ open: true, message: "Login successful!", severity: "success" });
-      setIsAuthenticated(true);
+      const responseData = await login(email, password);
+      if (responseData?.accessToken) {
+        setIsAuthenticated(true);
+        setSnackbar({ open: true, message: "Login successful!", severity: "success" });
+      } else {
+        throw new Error("Invalid login credentials");
+      }
     } catch (error: any) {
       setSnackbar({ open: true, message: error.message || "Login failed!", severity: "error" });
     }
