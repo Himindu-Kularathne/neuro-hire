@@ -1,3 +1,4 @@
+import { Slide } from "@mui/material";
 import JobCard from "./component/JobCard";
 
 interface Job {
@@ -11,6 +12,7 @@ interface Job {
 export default function Jobs() {
     return (
         <div>
+         
         <JobCard  job={{
             title: "Software Engineer",
             description: "We are looking for a software engineer to join our team.",
@@ -18,6 +20,7 @@ export default function Jobs() {
             experience: "2+ years",
             education: "Bachelors in Computer Science"
           }}/>
+        
         </div>
     )
 }
