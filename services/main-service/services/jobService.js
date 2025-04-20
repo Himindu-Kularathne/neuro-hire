@@ -53,8 +53,18 @@ const getAllJobs = async (profileId) => {
     `;
 
   const [rows] = await db.execute(query, [profileId]);
-  return rows;
+
+  const parsedRows = rows.map(row => ({
+    ...row,
+    skills_required: row.skills_required
+      ? row.skills_required.split(',').map(skill => skill.trim())
+      : []
+  }));
+
+  console.log("Parsed jobs:", parsedRows);
+  return parsedRows;
 };
+
 
 const updateJob = async (jobId, jobData) => {
   const { job_name, experience, education_required, skills_required } = jobData;
