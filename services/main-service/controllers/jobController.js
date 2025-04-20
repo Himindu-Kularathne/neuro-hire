@@ -33,11 +33,16 @@ const getAllJobs = async (req, res, next) => {
 const updateJob = async (req, res, next) => {
   try {
     const jobId = req.params.jobId;
-    const updatedJob = await jobService.updateJob(jobId, req.body);
+    const profileId = req.profileId;
+    const job = {
+      ...req.body,
+      profile_id: profileId,
+    };
+    const updatedJob = await jobService.updateJob(jobId, job);
     if (!updatedJob) {
       return res.status(404).json({ message: "Job not found" });
     }
-    res.status(200).json({ message: "Job updated successfully" });
+    res.status(200).json(updatedJob);
   } catch (err) {
     next(err);
   }

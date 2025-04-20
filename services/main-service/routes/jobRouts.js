@@ -7,6 +7,6 @@ const attachProfileId = require('../middlewares/attachProfileId');
 
 jobRouter.post('/', authenticateToken, authorizeRoles('recruiter', 'admin', 'seeker') , attachProfileId ,jobController.createJob);
 jobRouter.get('/', authenticateToken, attachProfileId, jobController.getAllJobs);
-jobRouter.put('/:jobId', jobController.updateJob);
+jobRouter.put('/:jobId',authenticateToken, attachProfileId,  jobController.updateJob);
 
 module.exports = jobRouter  ;
