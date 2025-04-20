@@ -9,3 +9,14 @@ export async function getJobs() {
     throw error; 
   }
 }
+
+
+export async function createJob(jobData: any) {
+  try {
+    const response = await fetchApi("http://localhost:3000/api/job/", "POST", jobData);
+    return response;
+  } catch (error) {
+    console.error("Failed to create job.");
+    throw error; 
+  }
+}

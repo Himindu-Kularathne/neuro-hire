@@ -13,27 +13,32 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import WorkIcon from "@mui/icons-material/Work";
+import { createJob } from "../../api/main/jobs/jobManager";
 
 export default function AddJob() {
   const [jobData, setJobData] = useState({
-    title: "",
+    job_name: "",
     description: "",
-    skills: [] as string[],
+    skills_required: [] as string[],
     experience: "",
-    education: "",
+    education_required: "",
   });
 
   const [skillInput, setSkillInput] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setJobData({ ...jobData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setJobData({
+      ...jobData,
+      [name]: value,
+    });
   };
 
   const handleAddSkill = () => {
     if (skillInput.trim() !== "") {
       setJobData({
         ...jobData,
-        skills: [...jobData.skills, skillInput.trim()],
+        skills_required: [...jobData.skills_required, skillInput.trim()],
       });
       setSkillInput("");
     }
@@ -42,13 +47,31 @@ export default function AddJob() {
   const handleDeleteSkill = (skillToDelete: string) => {
     setJobData({
       ...jobData,
-      skills: jobData.skills.filter((skill) => skill !== skillToDelete),
+      skills_required: jobData.skills_required.filter(
+        (skill) => skill !== skillToDelete
+      ),
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Job Data Submitted:", jobData);
+    const response =  await createJob(jobData);
+    console.log("Response:", response);
+    if (response) {
+      console.log("Job created successfully:", response);
+      setJobData({
+        job_name: "",
+        description: "",
+        skills_required: [],
+        experience: "",
+        education_required: "",
+      });
+      setSkillInput("");
+    }
+    else {
+      console.error("Failed to create job");
+    }
   };
 
   return (
@@ -74,8 +97,8 @@ export default function AddJob() {
           <TextField
             fullWidth
             label="Job Title"
-            name="title"
-            value={jobData.title}
+            name="job_name"
+            value={jobData.job_name}
             onChange={handleChange}
             required
             margin="normal"
@@ -119,7 +142,7 @@ export default function AddJob() {
           </Box>
 
           {/* Skill Chips */}
-          {jobData.skills.length > 0 && (
+          {jobData.skills_required.length > 0 && (
             <Stack
               direction="row"
               spacing={1}
@@ -127,7 +150,7 @@ export default function AddJob() {
               mt={2}
               sx={{ maxHeight: 120, overflowY: "auto" }}
             >
-              {jobData.skills.map((skill, index) => (
+              {jobData.skills_required.map((skill, index) => (
                 <Chip
                   key={index}
                   label={skill}
@@ -152,8 +175,8 @@ export default function AddJob() {
           <TextField
             fullWidth
             label="Education (e.g., Bachelor's in CS)"
-            name="education"
-            value={jobData.education}
+            name="education_required"
+            value={jobData.education_required}
             onChange={handleChange}
             required
             margin="normal"
@@ -167,6 +190,7 @@ export default function AddJob() {
             size="large"
             fullWidth
             sx={{ mt: 4 }}
+            startIcon={<AddIcon />}
           >
             Submit Job
           </Button>

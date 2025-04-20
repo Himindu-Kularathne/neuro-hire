@@ -7,6 +7,7 @@ const insertJobWithSkills = async (jobData) => {
     experience,
     education_required,
     skills_required,
+    description,
   } = jobData;
 
   const conn = await db.getConnection();
@@ -15,14 +16,16 @@ const insertJobWithSkills = async (jobData) => {
 
     // Insert job
     const insertJobQuery = `
-        INSERT INTO job ( profile_id, job_name, experience, education_required)
-        VALUES ( ?, ?, ?, ?)
+        INSERT INTO job ( profile_id, job_name, experience, education_required, description)
+        VALUES ( ?, ?, ?, ?, ?)
       `;
     const [result] = await conn.execute(insertJobQuery, [
       profile_id,
       job_name,
       experience,
       education_required,
+      description,
+
     ]);
 
     // Insert skills
@@ -60,14 +63,12 @@ const getAllJobs = async (profileId) => {
       ? row.skills_required.split(',').map(skill => skill.trim())
       : []
   }));
-
-  console.log("Parsed jobs:", parsedRows);
   return parsedRows;
 };
 
 
 const updateJob = async (jobId, jobData) => {
-  const { job_name, experience, education_required, skills_required } = jobData;
+  const { job_name, experience, education_required, skills_required, description } = jobData;
 
   const conn = await db.getConnection();
   try {
@@ -76,13 +77,14 @@ const updateJob = async (jobId, jobData) => {
     // Update job
     const updateJobQuery = `
         UPDATE job
-        SET job_name = ?, experience = ?, education_required = ?
+        SET job_name = ?, experience = ?, education_required = ?, description = ?
         WHERE job_id = ?
       `;
     await conn.execute(updateJobQuery, [
       job_name,
       experience,
       education_required,
+      description,
       jobId,
     ]);
 
