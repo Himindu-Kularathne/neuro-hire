@@ -8,18 +8,8 @@ import {
   Divider,
   Chip,
 } from "@mui/material";
+import { useUser } from "../../context/UserContext";
 
-const company = {
-  profile_id: "cmp-001",
-  profile_name: "TechNova Innovations",
-  profile_description: "Empowering businesses with next-gen AI solutions.",
-  profile_email: "contact@technova.com",
-  profile_phone: "+1 987 654 3210",
-  profile_website: "https://technova.com",
-  profile_address: "456 Silicon Avenue, San Francisco, CA",
-  profile_logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDDdhzKlfFGHIjvFFByRL-tNdsbIU4H4a3Hg&s",
-  active: true,
-};
 
 interface CompanyProfile {
     profile_id: string;
@@ -34,16 +24,17 @@ interface CompanyProfile {
 }
 
 const CompanyProfileView: React.FC = () => {
-    const [profile, setProfile] = useState<CompanyProfile | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    const {profile} = useUser();
 
-    // function to fetch company profile data
-    const fetchCompanyProfile = async () => {
-      
-    }
+    useEffect(() => {
+        console.log(profile);
+    }, [profile]);
 
+
+   
 
 
 
@@ -52,20 +43,20 @@ const CompanyProfileView: React.FC = () => {
       {/* Logo and Title Section */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 3 }}>
         <Avatar
-          src={company.profile_logo}
-          alt={company.profile_name}
+          src={profile.profile_logo}
+          alt={profile.profile_name}
           sx={{ width: 80, height: 80, bgcolor: "#fff", border: "1px solid #ddd" }}
         />
         <Box>
           <Typography variant="h4" fontWeight={600}>
-            {company.profile_name}
+            {profile.profile_name}
           </Typography>
           <Typography variant="subtitle1" color="text.secondary">
-            {company.profile_description}
+            {profile.profile_description}
           </Typography>
           <Chip
-            label={company.active ? "Active" : "Inactive"}
-            color={company.active ? "success" : "default"}
+            label={profile.active ? "Active" : "Inactive"}
+            color={profile.active ? "success" : "default"}
             size="small"
             sx={{ mt: 1 }}
           />
@@ -81,7 +72,7 @@ const CompanyProfileView: React.FC = () => {
             <Typography variant="subtitle2" color="text.secondary">
               Company ID
             </Typography>
-            <Typography>{company.profile_id}</Typography>
+            <Typography>{profile.profile_id}</Typography>
           </Paper>
         </Grid>
 
@@ -90,7 +81,7 @@ const CompanyProfileView: React.FC = () => {
             <Typography variant="subtitle2" color="text.secondary">
               Email
             </Typography>
-            <Typography>{company.profile_email}</Typography>
+            <Typography>{profile.profile_email}</Typography>
           </Paper>
         </Grid>
 
@@ -99,7 +90,7 @@ const CompanyProfileView: React.FC = () => {
             <Typography variant="subtitle2" color="text.secondary">
               Phone
             </Typography>
-            <Typography>{company.profile_phone}</Typography>
+            <Typography>{profile.profile_phone}</Typography>
           </Paper>
         </Grid>
 
@@ -114,9 +105,9 @@ const CompanyProfileView: React.FC = () => {
                 textDecoration: "underline",
                 cursor: "pointer",
               }}
-              onClick={() => window.open(company.profile_website, "_blank")}
+              onClick={() => window.open(profile.profile_website, "_blank")}
             >
-              {company.profile_website}
+              {profile.profile_website}
             </Typography>
           </Paper>
         </Grid>
@@ -126,7 +117,7 @@ const CompanyProfileView: React.FC = () => {
             <Typography variant="subtitle2" color="text.secondary">
               Address
             </Typography>
-            <Typography>{company.profile_address}</Typography>
+            <Typography>{profile.profile_address}</Typography>
           </Paper>
         </Grid>
       </Grid>

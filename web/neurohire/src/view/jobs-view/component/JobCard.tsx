@@ -8,22 +8,22 @@ import {
   Box,
 } from "@mui/material";
 
-// Define Job Description Type
-interface JobDescription {
-  title: string;
-  description: string;
-  skills: string[];
-  experience: string;
-  education: string;
-}
+// // Define Job Description Type
+// interface JobDescription {
+//   title: string;
+//   description: string;
+//   skills: string[];
+//   experience: string;
+//   education: string;
+// }
 
-// Props Interface
-interface JobCardProps {
-  job: JobDescription;
-}
+// // Props Interface
+// interface JobCardProps {
+//   job: JobDescription;
+// }
 
 // JobCard Component
-const JobCard: React.FC<JobCardProps> = ({ job }) => {
+const JobCard: React.FC<{ job: any }> = ({ job }) => {
   return (
     <Card
       sx={{
@@ -41,25 +41,26 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
     >
       <CardContent>
         <Typography variant="h6" fontWeight="bold" gutterBottom color="primary">
-          {job.title}
+          {job.job_name}
         </Typography>
 
-        <Typography variant="body2" color="text.secondary" mb={2}>
+        {/* <Typography variant="body2" color="text.secondary" mb={2}>
           {job.description}
-        </Typography>
+        </Typography> */}
 
         <Box mb={2}>
           <Typography variant="body2" fontWeight="bold" gutterBottom>
             Skills Required:
           </Typography>
           <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-            {job.skills.map((skill, index) => (
+            {job.skills_required.map((skill: string, index: number) => (
               <Chip
                 key={index}
                 label={skill}
+                variant="outlined"
                 color="primary"
                 size="small"
-                variant="outlined"
+                sx={{ fontSize: "0.8rem" }}
               />
             ))}
           </Stack>
@@ -76,7 +77,7 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
           Education:
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {job.education}
+          {job.education_required}
         </Typography>
       </CardContent>
     </Card>

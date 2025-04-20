@@ -1,47 +1,18 @@
+import React, { useState, useEffect } from "react";
 import { Grid, Container } from "@mui/material";
 import JobCard from "./component/JobCard";
+import { getJobs } from "../../api/main/jobs/jobManager";
 
 interface Job {
-  title: string;
+  job_id: string;
+  job_name: string;
   description: string;
-  skills: string[];
+  skills_required: string[];
   experience: string;
-  education: string;
+  education_required: string;
 }
 
-const jobs: Job[] = [
-  {
-    title: "Software Engineer",
-    description: "We are looking for a software engineer to join our team.",
-    skills: ["React", "Node", "TypeScript"],
-    experience: "2+ years",
-    education: "Bachelors in Computer Science",
-  },
-  {
-    title: "Data Scientist",
-    description: "We are looking for a data scientist to join our team.",
-    skills: ["Python", "Machine Learning", "Statistics"],
-    experience: "3+ years",
-    education: "Masters in Data Science",
-  },
-  {
-    title: "Product Manager",
-    description: "We are looking for a product manager to join our team.",
-    skills: ["Agile", "Scrum", "Product Management", "Stakeholder Management","Agile", "Scrum", "Product Management", "Stakeholder Management",],
-    experience: "5+ years",
-    education: "Masters in Business Administration",
-  },
-  {
-    title: "UX Designer",
-    description: "We are looking for a UX designer to join our team.",
-    skills: ["Figma", "Sketch", "User Research"],
-    experience: "3+ years",
-    education: "Bachelors in Design",
-  }
-];
-
 export default function Jobs() {
-
   // const [jobData, setJobData] = React.useState<Job[]>(jobs);
   // const [loading, setLoading] = React.useState(false);
 
@@ -49,6 +20,22 @@ export default function Jobs() {
   //   console.log("Job clicked:", job);
   // };
 
+  const [jobs, setJobs] = useState([]);
+
+  // --- fetch job data ---
+  const fetchJobData = async () => {
+    const jobData = await getJobs();
+    if (jobData) {
+      setJobs(jobData);
+      console.log("Job data fetched successfully:", jobData);
+    } else {
+      console.error("Failed to fetch job data");
+    }
+  };
+
+  useEffect(() => {
+    fetchJobData();
+  }, []);
 
   return (
     <Container sx={{ mt: 4 }}>

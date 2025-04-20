@@ -56,9 +56,10 @@ export default function Home() {
   //--- fetch profile data ---
   const fetchProfileData = async () => {
     try {
-      const response =  getProfile();
-      if (response) {
-        setProfile(response);
+      const profile =  await getProfile();
+      
+      if (profile) {
+        setProfile(profile);
         console.log("Profile data fetched successfully:", profile);
       } else {
         console.error("Failed to fetch profile data");
