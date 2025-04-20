@@ -44,7 +44,7 @@ const insertJobWithSkills = async (jobData) => {
 
 const getAllJobs = async (profileId) => {
   const query = `
-      SELECT j.job_id, j.profile_id, j.job_name, j.experience, j.education_required,
+      SELECT j.job_id, j.profile_id, j.job_name, j.experience, j.education_required, j.description,
              GROUP_CONCAT(js.skill_name) AS skills_required
       FROM job j
       LEFT JOIN job_skills js ON j.job_id = js.job_id
