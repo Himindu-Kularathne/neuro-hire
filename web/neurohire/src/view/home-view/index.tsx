@@ -10,18 +10,26 @@ import {
   ListItemText,
   IconButton,
   CircularProgress,
-  Divider,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 import { extractTextFromFile } from "../../utils/cv-parser";
 import { useUser } from "../../context/UserContext";
 import { getProfile } from "../../api/main/profile/profileManager";
+import * as pdfjsLib from "pdfjs-dist";
+import "pdfjs-dist/build/pdf.worker.entry";
+
+// PDF.js config
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
+  const [filePreviews, setFilePreviews] = useState<
+    { name: string; src: string | null }[]
+  >([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const {profile,setProfile} =  useUser();
+  const { profile, setProfile } = useUser();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
@@ -29,7 +37,49 @@ export default function Home() {
 
   const removeFile = (fileName: string) => {
     setFiles((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
+    setFilePreviews((prevPreviews) =>
+      prevPreviews.filter((p) => p.name !== fileName)
+    );
   };
+
+  useEffect(() => {
+    const generatePreviews = async () => {
+      const previews = await Promise.all(
+        files.map(async (file) => {
+          if (file.type === "application/pdf") {
+            const fileReader = new FileReader();
+            const result = await new Promise<string | null>((resolve) => {
+              fileReader.onload = async () => {
+                const typedArray = new Uint8Array(
+                  fileReader.result as ArrayBuffer
+                );
+                const pdf = await pdfjsLib.getDocument(typedArray).promise;
+                const page = await pdf.getPage(1);
+                const viewport = page.getViewport({ scale: 1 });
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d");
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                await page.render({ canvasContext: context!, viewport })
+                  .promise;
+                resolve(canvas.toDataURL());
+              };
+              fileReader.onerror = () => resolve(null);
+              fileReader.readAsArrayBuffer(file);
+            });
+            return { name: file.name, src: result };
+          } else {
+            return { name: file.name, src: null };
+          }
+        })
+      );
+      setFilePreviews(previews);
+    };
+
+    if (files.length > 0) {
+      generatePreviews();
+    }
+  }, [files]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -53,18 +103,15 @@ export default function Home() {
     setLoading(false);
   };
 
-  //--- fetch profile data ---
   const fetchProfileData = async () => {
     try {
-      const profile =  await getProfile();
-      
+      const profile = await getProfile();
       if (profile) {
         setProfile(profile);
         console.log("Profile data fetched successfully:", profile);
       } else {
         console.error("Failed to fetch profile data");
       }
-      
     } catch (error) {
       console.error("Error fetching profile data:", error);
     }
@@ -72,12 +119,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchProfileData();
-  }
-  , []);
-
-
-
-
+  }, []);
 
   return (
     <Box
@@ -94,9 +136,9 @@ export default function Home() {
         Upload Resumes
       </Typography>
 
-      {/* Instructions for the user */}
       <Typography variant="body1" color="text.secondary" align="center">
-        Drag and drop your resumes here or click to upload. Supported formats: PDF, DOC, DOCX.
+        Drag and drop your resumes here or click to upload. Supported formats:
+        PDF, DOC, DOCX.
       </Typography>
 
       <Paper
@@ -106,11 +148,11 @@ export default function Home() {
           mt: 3,
           width: "100%",
           maxWidth: 600,
-          height: 220,
+          minHeight: 220,
           border: "2px dashed #1976d2",
           backgroundColor: isDragActive ? "#e3f2fd" : "#ffffff",
           display: "flex",
-          alignItems: "center",
+          alignItems: files.length === 0 ? "center" : "flex-start",
           justifyContent: "center",
           flexDirection: "column",
           p: 3,
@@ -119,14 +161,68 @@ export default function Home() {
         }}
       >
         <input {...getInputProps()} />
-        <CloudUploadIcon sx={{ fontSize: 50, color: "#1976d2", mb: 1 }} />
-        <Typography variant="subtitle1" color="text.secondary" align="center">
-          {isDragActive
-            ? "Drop your resumes here..."
-            : files.length > 0
-            ? "Add more resumes"
-            : "Drag & drop resumes here or click to upload"}
-        </Typography>
+
+        {files.length === 0 ? (
+          <>
+            <CloudUploadIcon sx={{ fontSize: 50, color: "#1976d2", mb: 1 }} />
+            <Typography
+              variant="subtitle1"
+              color="text.secondary"
+              align="center"
+            >
+              {isDragActive
+                ? "Drop your resumes here..."
+                : "Drag & drop resumes here or click to upload"}
+            </Typography>
+          </>
+        ) : (
+          <Box sx={{ width: "100%" }}>
+            <Typography variant="subtitle1" color="text.secondary" mb={1}>
+              Preview Resumes:
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                gap: 2,
+                flexWrap: "wrap",
+              }}
+            >
+              {filePreviews.map((file) => (
+                <Box
+                  key={file.name}
+                  sx={{
+                    position: "relative",
+                    width: 100,
+                    border: "1px solid #ccc",
+                    borderRadius: 1,
+                    overflow: "hidden",
+                    textAlign: "center",
+                    background: "#f7f7f7",
+                    "&:hover .add-icon": {
+                      opacity: 1,
+                    },
+                  }}
+                >
+                  {file.src ? (
+                    <img
+                      src={file.src}
+                      alt={file.name}
+                      style={{ width: "100%", display: "block" }}
+                    />
+                  ) : (
+                    <Typography variant="body2" sx={{ p: 1 }}>
+                      {file.name}
+                    </Typography>
+                  )}
+                </Box>
+              ))}
+              <IconButton size="large" className="add-icon">
+                <AddIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          </Box>
+        )}
       </Paper>
 
       {files.length > 0 && (
@@ -144,7 +240,6 @@ export default function Home() {
           <Typography variant="h6" gutterBottom>
             Uploaded Files:
           </Typography>
-          <Divider sx={{ mb: 1 }} />
           <List dense>
             {files.map((file, index) => (
               <ListItem
@@ -173,7 +268,6 @@ export default function Home() {
           </Box>
         </Paper>
       )}
-      
     </Box>
   );
 }
