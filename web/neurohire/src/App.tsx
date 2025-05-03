@@ -1,14 +1,18 @@
-import React from "react";
-import Layout from "./layout/Layout";
-import AppHeader from "./layout/header/Header";
 import AppHandler from "./AppHandler";
-// import "./App.css";
+import Loader from "./component/LoadingComponent";
+import { AuthProvider } from "./context/AuthContext";
+import { JobProvider } from "./context/JobContext";
+import { UserProvider } from "./context/UserContext";
 
 function App() {
   return (
-    
-      <AppHandler />
-   
+    <AuthProvider>
+      <UserProvider>
+        <JobProvider>
+        <AppHandler />
+        </JobProvider>
+      </UserProvider>
+    </AuthProvider>
   );
 }
 

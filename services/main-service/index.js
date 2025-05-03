@@ -3,10 +3,18 @@ const bodyParser = require('body-parser');
 const errorHandler = require('./middlewares/errorHandler');
 const profileRoutes = require('./routes/profileRoutes');
 const jobRouts = require('./routes/jobRouts');
+const cors = require('cors');
 const { log } = require('./utils/logger');
 
 
 const app = express();
+app.use(cors(
+//   {
+//   origin: '*',
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   allowedHeaders: ['Content-Type', 'Authorization']
+// }
+));
 const port = 3000;
 
 app.use(bodyParser.json());
