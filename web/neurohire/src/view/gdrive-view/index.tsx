@@ -177,9 +177,7 @@ function App() {
       <h2>Google Drive Integration</h2>
 
       {!isSignedIn ? (
-        <div className="w-[300px] bg-black">
-          <div id="googleSignInDiv"></div>
-        </div>
+        <div id="googleSignInDiv"></div>
       ) : (
         <>
           <input
@@ -188,7 +186,6 @@ function App() {
             onChange={(e) => setFolderName(e.target.value)}
             style={{ width: "100%", margin: "10px 0", padding: 8 }}
           />
-
           <input
             type="file"
             onChange={(e) => setFile(e.target.files?.[0] || null)}

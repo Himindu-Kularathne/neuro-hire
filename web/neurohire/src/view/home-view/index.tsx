@@ -19,6 +19,10 @@ import StepUpload from "./steps/StepUpload";
 import StepJobSelect from "./steps/StepJobSelect";
 import StepPreview from "./steps/StepPreview";
 import StepResult from "./steps/StepResult";
+import {
+  createFolder,
+  uploadFileToFolder,
+} from "../gdrive-view/googleDriveHelpers";
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -105,6 +109,29 @@ export default function Home() {
   const handleFinalSubmit = () => {
     // submit to the backend
     setActiveStep(3); // Go to results
+    handleGoogleDrive();
+  };
+
+  const handleGoogleDrive = async () => {
+    const token = localStorage.getItem("access_token"); // Or manage via context/state
+    if (!token) {
+      alert("You must sign in with Google first.");
+      return;
+    }
+
+    try {
+      const folderId = await createFolder(token, "Uploaded Resumes");
+
+      for (const file of files) {
+        const fileId = await uploadFileToFolder(token, file, folderId);
+        console.log(`Uploaded ${file.name} with ID: ${fileId}`);
+      }
+
+      alert(`Successfully uploaded ${files.length} files to Google Drive.`);
+    } catch (err) {
+      console.error("Google Drive upload failed", err);
+      alert("Failed to upload to Google Drive.");
+    }
   };
 
   const fetchProfileData = async () => {
