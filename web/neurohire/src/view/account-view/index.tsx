@@ -33,11 +33,6 @@ const CompanyProfileView: React.FC = () => {
         console.log(profile);
     }, [profile]);
 
-
-   
-
-
-
   return (
     <Box sx={{ p: 4 }}>
       {/* Logo and Title Section */}
