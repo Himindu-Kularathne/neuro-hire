@@ -10,6 +10,7 @@ import {
   Grid,
   Alert,
   Collapse,
+  CircularProgress,
 } from "@mui/material";
 import { Add, Delete } from "@mui/icons-material";
 import { useJob } from "../../../context/JobContext";
@@ -17,7 +18,7 @@ import GlobalSnackbar from "../../../context/Alert";
 
 interface JobEditFormProps {
   job: any;
-    handleSave: () => void;
+  handleSave: () => void;
 }
 
 const JobEditForm: React.FC<JobEditFormProps> = ({ job, handleSave }) => {
@@ -26,6 +27,7 @@ const JobEditForm: React.FC<JobEditFormProps> = ({ job, handleSave }) => {
     type: "success" | "error";
     message: string;
   } | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const { updateJobData } = useJob();
 
@@ -53,23 +55,39 @@ const JobEditForm: React.FC<JobEditFormProps> = ({ job, handleSave }) => {
   };
 
   const handleSaveJob = async () => {
+    // Basic Validation
+    if (
+      !editedJob.job_name ||
+      !editedJob.description ||
+      !editedJob.skills_required.length
+    ) {
+      setAlert({
+        type: "error",
+        message: "Please fill in all fields and add at least one skill.",
+      });
+      return;
+    }
+
+    setLoading(true);
     try {
       await updateJobData(editedJob.job_id, editedJob);
       setAlert({ type: "success", message: "Job updated successfully!" });
-        handleSave();
+      handleSave();
     } catch (error) {
       console.error("Error updating job data:", error);
       setAlert({
         type: "error",
         message: "Failed to update job. Please try again.",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <Paper
       elevation={0}
-      sx={{ p: 2, backgroundColor: "#f9f9f9", borderRadius: 2 }}
+      sx={{ p: 3, backgroundColor: "#f9f9f9", borderRadius: 2 }}
     >
       <Collapse in={alert !== null}>
         {alert && (
@@ -89,6 +107,7 @@ const JobEditForm: React.FC<JobEditFormProps> = ({ job, handleSave }) => {
             fullWidth
             value={editedJob.job_name}
             onChange={(e) => handleChange("job_name", e.target.value)}
+            required
           />
         </Grid>
 
@@ -100,6 +119,7 @@ const JobEditForm: React.FC<JobEditFormProps> = ({ job, handleSave }) => {
             minRows={3}
             value={editedJob.description}
             onChange={(e) => handleChange("description", e.target.value)}
+            required
           />
         </Grid>
 
@@ -116,6 +136,7 @@ const JobEditForm: React.FC<JobEditFormProps> = ({ job, handleSave }) => {
                   fullWidth
                   size="small"
                   onChange={(e) => handleSkillChange(index, e.target.value)}
+                  required
                 />
                 <Button
                   variant="outlined"
@@ -136,6 +157,11 @@ const JobEditForm: React.FC<JobEditFormProps> = ({ job, handleSave }) => {
             >
               Add Skill
             </Button>
+            {editedJob.skills_required.length === 0 && (
+              <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+                Please add at least one skill.
+              </Typography>
+            )}
           </Stack>
         </Grid>
 
@@ -145,6 +171,7 @@ const JobEditForm: React.FC<JobEditFormProps> = ({ job, handleSave }) => {
             fullWidth
             value={editedJob.experience}
             onChange={(e) => handleChange("experience", e.target.value)}
+            required
           />
         </Grid>
 
@@ -154,6 +181,7 @@ const JobEditForm: React.FC<JobEditFormProps> = ({ job, handleSave }) => {
             fullWidth
             value={editedJob.education_required}
             onChange={(e) => handleChange("education_required", e.target.value)}
+            required
           />
         </Grid>
 
@@ -165,8 +193,13 @@ const JobEditForm: React.FC<JobEditFormProps> = ({ job, handleSave }) => {
             onClick={handleSaveJob}
             fullWidth
             sx={{ py: 1.2, fontWeight: "bold" }}
+            disabled={loading}
           >
-            Save Job
+            {loading ? (
+              <CircularProgress size={24} color="secondary" />
+            ) : (
+              "Save Job"
+            )}
           </Button>
         </Grid>
       </Grid>

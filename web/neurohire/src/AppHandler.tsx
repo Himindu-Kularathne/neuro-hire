@@ -24,7 +24,6 @@ const decodeToken = (token: string) => {
     return null;
   }
 };
-
 const AppHandler: React.FC = () => {
   const { isAuthenticated, setIsAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -37,26 +36,31 @@ const AppHandler: React.FC = () => {
 
       const accessPayload = accessToken ? decodeToken(accessToken) : null;
 
+      // Case 1: Access token is valid
       if (accessPayload && accessPayload.exp > currentTime) {
         setIsAuthenticated(true);
-      } else if (refreshToken) {
-        const refreshPayload = decodeToken(refreshToken);
+        setLoading(false);
+        return;
+      }
 
-        if (refreshPayload && refreshPayload.exp > currentTime) {
-          try {
-            await refreshAccessToken();
-            setIsAuthenticated(true);
-          } catch (err) {
-            console.error("Error refreshing token:", err);
-            setIsAuthenticated(false);
-          }
-        } else {
+      // Remove invalid/expired access token
+      localStorage.removeItem("accessToken");
+
+      // Case 2: Attempt to refresh if refresh token is valid
+      const refreshPayload = refreshToken ? decodeToken(refreshToken) : null;
+
+      if (refreshToken && refreshPayload && refreshPayload.exp > currentTime) {
+        try {
+          await refreshAccessToken(); // this should store new access token
+          setIsAuthenticated(true);
+        } catch (err) {
+          console.error("Error refreshing token:", err);
           localStorage.removeItem("refreshToken");
           setIsAuthenticated(false);
         }
-
-        localStorage.removeItem("accessToken");
       } else {
+        // Refresh token is also expired or not present
+        localStorage.removeItem("refreshToken");
         setIsAuthenticated(false);
       }
 

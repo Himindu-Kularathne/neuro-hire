@@ -1,34 +1,68 @@
+let isRefreshing = false;
+
 export async function fetchApi(
   url: string,
-  method: string = "GET",
+  method = "GET",
   body: any = null
-) {
-  const accessToken = localStorage.getItem("accessToken");
+): Promise<any> {
+  const getAccessToken = () => localStorage.getItem("accessToken");
+  const getRefreshToken = () => localStorage.getItem("refreshToken");
 
-  const response = await fetch(url, {
-    method: method,
-    headers: {
+  const makeRequest = async (token: string | null) => {
+    const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      Authorization: accessToken ? `Bearer ${accessToken}` : "",
-    },
+    };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
 
-    body: body ? JSON.stringify(body) : null,
-  });
+    const res = await fetch(url, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : null,
+    });
 
-  const responseClone = response.clone();
-  let responseData = null;
+    const cloned = res.clone();
+    let data;
+    try {
+      data = await cloned.json();
+    } catch {}
+
+    if (!res.ok) {
+      const message = data?.message || `HTTP error: ${res.status}`;
+      const error: any = new Error(message);
+      error.status = res.status;
+      throw error;
+    }
+
+    return data;
+  };
 
   try {
-    responseData = await responseClone.json();
-  } catch (e) {
-    console.error("No JSON response body");
-  }
+    return await makeRequest(getAccessToken());
+  } catch (err: any) {
+    if (err.status === 401 && !isRefreshing) {
+      isRefreshing = true;
+      try {
+        const refreshToken = getRefreshToken();
+        if (!refreshToken) throw new Error("No refresh token");
 
-  if (!response.ok) {
-    const errorMessage =
-      responseData?.message || `HTTP error! status: ${response.status}`;
-    throw new Error(errorMessage);
-  }
+        const res = await fetch("/api/auth/refresh", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refreshToken }),
+        });
 
-  return responseData; // Return parsed response instead of the raw response
+        if (!res.ok) throw new Error("Refresh token invalid");
+
+        const { accessToken: newToken } = await res.json();
+        localStorage.setItem("accessToken", newToken);
+        return await makeRequest(newToken);
+      } catch (refreshErr) {
+        console.error("Refresh failed", refreshErr);
+        throw refreshErr;
+      } finally {
+        isRefreshing = false;
+      }
+    }
+    throw err;
+  }
 }
