@@ -36,6 +36,8 @@ const Login: React.FC = () => {
       const responseData = await login(email, password);
       if (responseData?.accessToken) {
         setIsAuthenticated(true);
+        localStorage.setItem("accessToken", responseData.accessToken);
+        localStorage.setItem("refreshToken", responseData.refreshToken);
         setSnackbar({
           open: true,
           message: "Login successful!",
@@ -59,6 +61,9 @@ const Login: React.FC = () => {
     const form = new FormData(e.currentTarget);
     const email = form.get("email") as string;
     const password = form.get("password") as string;
+    const username = form.get("username") as string;
+    const confirmPassword = form.get("confirmPassword") as string;
+    const role = form.get("role") as string;
 
     setLoading(true);
     try {
