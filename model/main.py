@@ -31,7 +31,7 @@ embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mp
 
 llm = GoogleGenerativeAI(
     model="models/gemini-1.5-pro-latest",
-    google_api_key="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",  # Replace with secure loading in prod
+    google_api_key="<API-Key>",  # Replace with secure loading in prod
     temperature=0.1,
     max_output_tokens=500,
 )
