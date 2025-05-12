@@ -6,11 +6,15 @@ export async function login(email: string, password: string) {
   }
 
   try {
-    const responseData = await fetchApi("http://localhost:3001/api/auth/login", "POST", {
-      email,
-      password,
-    });
-    if (responseData?.accessToken ) {
+    const responseData = await fetchApi(
+      "http://localhost:3001/api/auth/login",
+      "POST",
+      {
+        email,
+        password,
+      }
+    );
+    if (responseData?.accessToken) {
       localStorage.setItem("accessToken", responseData.accessToken);
       // localStorage.setItem("user", JSON.stringify(responseData.user));
     } else {
