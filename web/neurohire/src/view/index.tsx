@@ -15,5 +15,5 @@ export const View = {
   addJobView,
   gDriveView,
   accountView,
-  preferencesView
-}
+  preferencesView,
+};

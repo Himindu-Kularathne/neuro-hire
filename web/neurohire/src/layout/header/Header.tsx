@@ -36,7 +36,7 @@ const AppHeader: React.FC = () => {
   const handleMenuItemClick = (view: string) => {
     setSelectedView(view);
     navigation(`/${view}`);
-    toggleDrawer(false)(); 
+    toggleDrawer(false)();
   };
 
   return (

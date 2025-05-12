@@ -1,83 +1,118 @@
-import React from "react";
-import {
-  Box,
-  Typography,
-  Paper,
-  Divider,
-  Switch,
-  FormControlLabel,
-  TextField,
-  Grid,
-} from "@mui/material";
+import React, { useState } from "react";
+import { Box, Typography, Divider, Snackbar, Alert } from "@mui/material";
 
+import Section from "./components/Section";
+import ProfilePreferences from "./components/ProfilePreferences";
+import ModelPreferences from "./components/ModelPreferences";
+import NotificationPreferences from "./components/NotificationPreferences";
+import RegisterUser from "./components/RegisterUser";
 const PreferencesView: React.FC = () => {
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error",
+  });
+
+  const [openSections, setOpenSections] = useState({
+    profile: false,
+    model: false,
+    notifications: false,
+    register: false,
+  });
+
+  const [registerForm, setRegisterForm] = useState({
+    username: "",
+    email: "",
+    role: "Recruiter",
+  });
+
+  const toggleSection = (key: keyof typeof openSections) => {
+    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handledRegister = () => {
+    const { username, email, role } = registerForm;
+
+    if (!username || !email || !role) {
+      setSnackbar({
+        open: true,
+        message: "Please fill all fields.",
+        severity: "error",
+      });
+      return;
+    }
+
+    console.log("Registering user:", registerForm);
+
+    setSnackbar({
+      open: true,
+      message: `Registration email send to ${email} with role ${role}`,
+      severity: "success",
+    });
+
+    setRegisterForm({ username: "", email: "", role: "Recruiter" });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
   return (
-    <Box sx={{ p: 4 }}>
-      <Typography variant="h4" fontWeight={600} gutterBottom>
+    <Box sx={{ maxWidth: 1000, mx: "auto", p: 4 }}>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          variant="filled"
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
+      <Typography variant="h4" fontWeight={700} gutterBottom>
         Preferences
       </Typography>
+      <Divider sx={{ mb: 4 }} />
 
-      <Divider sx={{ my: 3 }} />
+      <Section
+        title="Profile Preferences"
+        open={openSections.profile}
+        toggle={() => toggleSection("profile")}
+      >
+        <ProfilePreferences />
+      </Section>
 
-      {/* Profile Preferences Section */}
-      <Typography variant="h6" gutterBottom>
-        Profile Preferences
-      </Typography>
-      <Paper elevation={1} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Display Name"
-              defaultValue="Company XYZ"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Email"
-              defaultValue="example@company.com"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Description"
-              defaultValue="Your company description here."
-              multiline
-              rows={3}
-            />
-          </Grid>
-        </Grid>
-      </Paper>
+      <Section
+        title="Model Preferences"
+        open={openSections.model}
+        toggle={() => toggleSection("model")}
+      >
+        <ModelPreferences />
+      </Section>
 
-      {/* Model Preferences Section */}
-      <Typography variant="h6" gutterBottom>
-        Model Preferences
-      </Typography>
-      <Paper elevation={1} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
-        <FormControlLabel
-          control={<Switch defaultChecked />}
-          label="Enable AI-assisted screening"
+      <Section
+        title="Notification Preferences"
+        open={openSections.notifications}
+        toggle={() => toggleSection("notifications")}
+      >
+        <NotificationPreferences />
+      </Section>
+
+      <Section
+        title="Register New User"
+        open={openSections.register}
+        toggle={() => toggleSection("register")}
+      >
+        <RegisterUser
+          registerForm={registerForm}
+          setRegisterForm={setRegisterForm}
+          handledRegister={handledRegister}
         />
-        <FormControlLabel
-          control={<Switch />}
-          label="Use advanced ranking model"
-        />
-      </Paper>
-
-      {/* Notification Preferences Section */}
-      <Typography variant="h6" gutterBottom>
-        Notification Preferences
-      </Typography>
-      <Paper elevation={1} sx={{ p: 3, borderRadius: 2 }}>
-        <FormControlLabel
-          control={<Switch defaultChecked />}
-          label="Email notifications"
-        />
-        <FormControlLabel control={<Switch />} label="SMS alerts" />
-        <FormControlLabel control={<Switch />} label="Weekly summary reports" />
-      </Paper>
+      </Section>
     </Box>
   );
 };

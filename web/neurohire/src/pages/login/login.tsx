@@ -36,12 +36,20 @@ const Login: React.FC = () => {
       const responseData = await login(email, password);
       if (responseData?.accessToken) {
         setIsAuthenticated(true);
-        setSnackbar({ open: true, message: "Login successful!", severity: "success" });
+        setSnackbar({
+          open: true,
+          message: "Login successful!",
+          severity: "success",
+        });
       } else {
         throw new Error("Invalid login credentials");
       }
     } catch (error: any) {
-      setSnackbar({ open: true, message: error.message || "Login failed!", severity: "error" });
+      setSnackbar({
+        open: true,
+        message: error.message || "Login failed!",
+        severity: "error",
+      });
     }
     setLoading(false);
   };
@@ -55,10 +63,18 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       // Your actual register logic here
-      setSnackbar({ open: true, message: "Registration successful!", severity: "success" });
+      setSnackbar({
+        open: true,
+        message: "Registration successful!",
+        severity: "success",
+      });
       setMode("menu");
     } catch (error: any) {
-      setSnackbar({ open: true, message: error.message || "Registration failed!", severity: "error" });
+      setSnackbar({
+        open: true,
+        message: error.message || "Registration failed!",
+        severity: "error",
+      });
     }
     setLoading(false);
   };
@@ -96,22 +112,38 @@ const Login: React.FC = () => {
           autoHideDuration={3000}
           onClose={handleCloseSnackbar}
         >
-          <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+          <Alert
+            onClose={handleCloseSnackbar}
+            severity={snackbar.severity}
+            variant="filled"
+          >
             {snackbar.message}
           </Alert>
         </Snackbar>
 
-        <Paper elevation={3} sx={{ padding: 4, width: "100%", maxWidth: 400 , borderRadius: 10 }}>
+        <Paper
+          elevation={3}
+          sx={{ padding: 4, width: "100%", maxWidth: 400, borderRadius: 10 }}
+        >
           <Typography variant="h4" align="center" gutterBottom>
             NeuroHire
           </Typography>
 
           {mode === "menu" && (
             <>
-              <Button fullWidth variant="contained" sx={{ mb: 2 }} onClick={() => setMode("login")}>
+              <Button
+                fullWidth
+                variant="contained"
+                sx={{ mb: 2 }}
+                onClick={() => setMode("login")}
+              >
                 Login
               </Button>
-              <Button fullWidth variant="outlined" onClick={() => setMode("register")}>
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={() => setMode("register")}
+              >
                 Register
               </Button>
             </>
@@ -119,9 +151,28 @@ const Login: React.FC = () => {
 
           {mode === "login" && (
             <Box component="form" onSubmit={handleLogin}>
-              <TextField name="email" label="Email" fullWidth margin="normal" required />
-              <TextField name="password" label="Password" type="password" fullWidth margin="normal" required />
-              <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }} disabled={loading}>
+              <TextField
+                name="email"
+                label="Email"
+                fullWidth
+                margin="normal"
+                required
+              />
+              <TextField
+                name="password"
+                label="Password"
+                type="password"
+                fullWidth
+                margin="normal"
+                required
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 2 }}
+                disabled={loading}
+              >
                 Login
               </Button>
               <Button fullWidth onClick={() => setMode("menu")} sx={{ mt: 1 }}>
@@ -132,9 +183,51 @@ const Login: React.FC = () => {
 
           {mode === "register" && (
             <Box component="form" onSubmit={handleRegister}>
-              <TextField name="email" label="Email" fullWidth margin="normal" required />
-              <TextField name="password" label="Password" type="password" fullWidth margin="normal" required />
-              <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }} disabled={loading}>
+              <TextField
+                name="username"
+                label="Username"
+                fullWidth
+                margin="normal"
+                required
+              />
+              <TextField
+                name="email"
+                label="Email"
+                fullWidth
+                margin="normal"
+                required
+              />
+              <TextField
+                name="password"
+                label="Password"
+                type="password"
+                fullWidth
+                margin="normal"
+                required
+              />
+              <TextField
+                name="confirmPassword"
+                label="Confirm Password"
+                type="password"
+                fullWidth
+                margin="normal"
+                required
+              />
+              <TextField
+                name="role"
+                label="Role"
+                fullWidth
+                margin="normal"
+                required
+              />
+
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 2 }}
+                disabled={loading}
+              >
                 Register
               </Button>
               <Button fullWidth onClick={() => setMode("menu")} sx={{ mt: 1 }}>
