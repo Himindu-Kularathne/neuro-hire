@@ -3,7 +3,7 @@ require("dotenv").config();
 const rankResumes = async (payload) => {
   try {
     const rankedResumeResponse = await fetch(
-      `http://localhost:8000/rank-resumes`,
+      `${process.env.RESUME_RANKING_API_BASE_URL}/rank-resumes`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
