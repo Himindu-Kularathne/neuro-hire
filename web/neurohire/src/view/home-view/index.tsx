@@ -103,6 +103,7 @@ export default function Home() {
   };
 
   const handleFinalSubmit = () => {
+    // submit to the backend
     setActiveStep(3); // Go to results
   };
 
@@ -173,7 +174,12 @@ export default function Home() {
             onPrev={() => setActiveStep(0)}
           />
         )}
-        {activeStep === 2 && <StepPreview onSubmit={handleFinalSubmit} />}
+        {activeStep === 2 && (
+          <StepPreview
+            onSubmit={handleFinalSubmit}
+            onPrev={() => setActiveStep(1)}
+          />
+        )}
         {activeStep === 3 && <StepResult />}
       </Paper>
     </Box>
