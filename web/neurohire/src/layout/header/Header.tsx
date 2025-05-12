@@ -22,6 +22,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { APP_DATA } from "../../utils/constants";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import AddToDriveIcon from "@mui/icons-material/AddToDrive";
 
 const AppHeader: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -59,7 +60,7 @@ const AppHeader: React.FC = () => {
               { label: "Home", view: "Home", path: "" },
               { label: "Jobs", view: "Jobs", path: "jobs/owned" },
               { label: "New Job", view: "NewJob", path: "jobs/add" },
-              // { label: "GDrive", view: "GDrive", path: "gdrive" },
+              { label: <AddToDriveIcon />, view: "GDrive", path: "gdrive" },
               // { label: "Settings", view: "Settings", path: "settings" },
             ].map((nav) => (
               <Button

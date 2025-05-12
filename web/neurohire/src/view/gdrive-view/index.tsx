@@ -17,48 +17,6 @@ function App() {
 
   console.log("Client", CLIENT_ID);
 
-  useEffect(() => {
-    // Load GAPI client
-    gapi.load("client", () => {
-      gapi.client.init({
-        apiKey: API_KEY,
-        discoveryDocs: DISCOVERY_DOCS,
-      });
-    });
-
-    // Initialize GIS
-    window.google.accounts.id.initialize({
-      client_id: CLIENT_ID,
-      callback: handleCredentialResponse,
-    });
-
-    // Show button
-    window.google.accounts.id.renderButton(
-      document.getElementById("googleSignInDiv")!,
-      {
-        theme: "outline",
-        size: "large",
-      }
-    );
-
-    window.google.accounts.id.prompt(
-      (notification: google.accounts.id.PromptMomentNotification) => {
-        if (notification.isNotDisplayed()) {
-          console.log(
-            "One Tap not displayed:",
-            notification.getNotDisplayedReason()
-          );
-        }
-        if (notification.isSkippedMoment()) {
-          console.log("User skipped One Tap");
-        }
-      }
-    );
-
-    // Optional auto prompt
-    // window.google.accounts.id.prompt();
-  }, []);
-
   const handleCredentialResponse = async (response: any) => {
     const jwt = response.credential;
     console.log("JWT:", jwt);
@@ -76,6 +34,12 @@ function App() {
 
     tokenClient.requestAccessToken();
   };
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("access_token", token);
+    }
+  }, [token]);
 
   const extractFolderId = (url: string) => {
     const match = url.match(/\/folders\/([a-zA-Z0-9_-]+)/);
@@ -133,13 +97,87 @@ function App() {
     alert(`Created folder with ID: ${result.id}`);
   };
 
+  interface ExtendedGoogleAuthConfig {
+    client_id: string;
+    callback: (response: any) => void;
+    auto_select?: boolean;
+  }
+
+  const authConfig: ExtendedGoogleAuthConfig = {
+    client_id: CLIENT_ID,
+    callback: handleCredentialResponse,
+  };
+
+  const handleSignOut = () => {
+    if (token) {
+      // Revoke the token (runtime-safe)
+      (window.google.accounts.oauth2 as any).revoke(token, () => {
+        console.log("Access token revoked");
+        localStorage.removeItem("access_token");
+        setToken(null);
+        setIsSignedIn(false);
+      });
+    } else {
+      // Just clear state if no token
+      localStorage.removeItem("access_token");
+      setToken(null);
+      setIsSignedIn(false);
+    }
+  };
+
+  useEffect(() => {
+    // Load GAPI client
+    gapi.load("client", () => {
+      gapi.client.init({
+        apiKey: API_KEY,
+        discoveryDocs: DISCOVERY_DOCS,
+      });
+    });
+
+    // Initialize GIS
+    window.google.accounts.id.initialize(authConfig);
+
+    // Show button
+    window.google.accounts.id.renderButton(
+      document.getElementById("googleSignInDiv")!,
+      {
+        theme: "outline",
+        size: "large",
+      }
+    );
+
+    window.google.accounts.id.prompt(
+      (notification: google.accounts.id.PromptMomentNotification) => {
+        if (notification.isNotDisplayed()) {
+          console.log(
+            "One Tap not displayed:",
+            notification.getNotDisplayedReason()
+          );
+        }
+        if (notification.isSkippedMoment()) {
+          console.log("User skipped One Tap");
+        }
+      }
+    );
+
+    // Optional auto prompt
+    // window.google.accounts.id.prompt();
+  }, []);
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem("access_token");
+    if (savedToken) {
+      setToken(savedToken);
+      setIsSignedIn(true);
+    }
+  }, []);
+
   return (
     <div style={{ padding: 20 }}>
       <h2>Google Drive Integration</h2>
 
       {!isSignedIn ? (
         <div className="w-[300px] bg-black">
-          Hellooo
           <div id="googleSignInDiv"></div>
         </div>
       ) : (
@@ -161,6 +199,7 @@ function App() {
           <div style={{ display: "flex", gap: 10 }}>
             <button onClick={handleUpload}>Upload File</button>
           </div>
+          <button onClick={handleSignOut}>Sign Out</button>
         </>
       )}
     </div>
