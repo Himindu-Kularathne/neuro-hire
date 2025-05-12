@@ -41,12 +41,19 @@ export const routes: RouteObjectWithRole[] = [
     allowRoles: [],
   },
   {
-    path: "/my-account/notifications",
-    text: "Notifications",
+    path: "preferences",
+    text: "Preferences",
     icon: undefined,
-    element: React.createElement(View.notificationsView),
+    element: React.createElement(View.preferencesView),
     allowRoles: [],
   },
+  // {
+  //   path: "/my-account/notifications",
+  //   text: "Notifications",
+  //   icon: undefined,
+  //   element: React.createElement(View.notificationsView),
+  //   allowRoles: [],
+  // },
   {
     path: "/jobs/add",
     text: "Add Job",
