@@ -59,8 +59,8 @@ const AppHeader: React.FC = () => {
               { label: "Home", view: "Home", path: "" },
               { label: "Jobs", view: "Jobs", path: "jobs/owned" },
               { label: "New Job", view: "NewJob", path: "jobs/add" },
-              { label: "GDrive", view: "GDrive", path: "gdrive" },
-              { label: "Settings", view: "Settings", path: "settings" },
+              // { label: "GDrive", view: "GDrive", path: "gdrive" },
+              // { label: "Settings", view: "Settings", path: "settings" },
             ].map((nav) => (
               <Button
                 key={nav.label}
