@@ -7,19 +7,24 @@ import {
   Typography,
   Box,
   Paper,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { login } from "../../api/auth/login";
 import { useAuth } from "../../context/AuthContext";
 
 const Login: React.FC = () => {
   const { setIsAuthenticated } = useAuth();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
   const [mode, setMode] = useState<"menu" | "login" | "register">("menu");
   const [loading, setLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState<{
-    open: boolean;
-    message: string;
-    severity: "success" | "error";
-  }>({ open: false, message: "", severity: "success" });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error",
+  });
 
   const handleCloseSnackbar = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
@@ -88,6 +93,7 @@ const Login: React.FC = () => {
     <Box
       sx={{
         display: "flex",
+        flexDirection: { xs: "column", md: "row" },
         minHeight: "100vh",
         width: "100%",
       }}
@@ -96,7 +102,8 @@ const Login: React.FC = () => {
       <Box
         sx={{
           flex: 1,
-          backgroundImage: `url("https://img.freepik.com/premium-vector/business-people_48369-7691.jpg?w=740")`, // 👈 replace with your image path
+          height: { xs: 200, md: "100vh" },
+          backgroundImage: `url("https://img.freepik.com/premium-vector/business-people_48369-7691.jpg?w=740")`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -110,6 +117,8 @@ const Login: React.FC = () => {
           justifyContent: "center",
           alignItems: "center",
           bgcolor: "#f9f9f9",
+          px: 2,
+          py: { xs: 4, md: 0 },
         }}
       >
         <Snackbar
@@ -128,9 +137,20 @@ const Login: React.FC = () => {
 
         <Paper
           elevation={3}
-          sx={{ padding: 4, width: "100%", maxWidth: 400, borderRadius: 10 }}
+          sx={{
+            padding: 4,
+            width: "100%",
+            maxWidth: 400,
+            borderRadius: 4,
+            boxShadow: 4,
+          }}
         >
-          <Typography variant="h4" align="center" gutterBottom>
+          <Typography
+            variant="h4"
+            align="center"
+            gutterBottom
+            fontSize={{ xs: "1.75rem", sm: "2rem" }}
+          >
             NeuroHire
           </Typography>
 
