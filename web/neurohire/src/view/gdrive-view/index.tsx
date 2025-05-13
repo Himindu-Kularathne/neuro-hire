@@ -4,7 +4,9 @@ import { gapi } from "gapi-script";
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 const SCOPES = "https://www.googleapis.com/auth/drive.file";
-const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
+const DISCOVERY_DOCS = [
+  "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
+];
 
 function App() {
   const [token, setToken] = useState<string | null>(null);
@@ -12,6 +14,8 @@ function App() {
   const [folderId, setFolderId] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [folderName, setFolderName] = useState("");
+
+  console.log("Client", CLIENT_ID);
 
   useEffect(() => {
     // Load GAPI client
@@ -29,19 +33,27 @@ function App() {
     });
 
     // Show button
-    window.google.accounts.id.renderButton(document.getElementById("googleSignInDiv")!, {
-      theme: "outline",
-      size: "large",
-    });
+    window.google.accounts.id.renderButton(
+      document.getElementById("googleSignInDiv")!,
+      {
+        theme: "outline",
+        size: "large",
+      }
+    );
 
-    window.google.accounts.id.prompt((notification: google.accounts.id.PromptMomentNotification) => {
-      if (notification.isNotDisplayed()) {
-        console.log("One Tap not displayed:", notification.getNotDisplayedReason());
+    window.google.accounts.id.prompt(
+      (notification: google.accounts.id.PromptMomentNotification) => {
+        if (notification.isNotDisplayed()) {
+          console.log(
+            "One Tap not displayed:",
+            notification.getNotDisplayedReason()
+          );
+        }
+        if (notification.isSkippedMoment()) {
+          console.log("User skipped One Tap");
+        }
       }
-      if (notification.isSkippedMoment()) {
-        console.log("User skipped One Tap");
-      }
-    });
+    );
 
     // Optional auto prompt
     // window.google.accounts.id.prompt();
@@ -73,7 +85,8 @@ function App() {
   const HARDCODED_FOLDER_ID = "16s_GojXO_OULSpOmNaul952oVZrPm-Wm";
 
   const handleUpload = async () => {
-    if (!file || !token) return alert("Select a file and paste a valid folder link.");
+    if (!file || !token)
+      return alert("Select a file and paste a valid folder link.");
 
     const metadata = {
       name: file.name,
@@ -81,14 +94,20 @@ function App() {
     };
 
     const form = new FormData();
-    form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+    form.append(
+      "metadata",
+      new Blob([JSON.stringify(metadata)], { type: "application/json" })
+    );
     form.append("file", file);
 
-    const res = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id", {
-      method: "POST",
-      headers: new Headers({ Authorization: `Bearer ${token}` }),
-      body: form,
-    });
+    const res = await fetch(
+      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id",
+      {
+        method: "POST",
+        headers: new Headers({ Authorization: `Bearer ${token}` }),
+        body: form,
+      }
+    );
 
     const result = await res.json();
     alert(`Uploaded file with ID: ${result.id}`);
@@ -119,7 +138,10 @@ function App() {
       <h2>Google Drive Integration</h2>
 
       {!isSignedIn ? (
-        <div id="googleSignInDiv"></div>
+        <div className="w-[300px] bg-black">
+          Hellooo
+          <div id="googleSignInDiv"></div>
+        </div>
       ) : (
         <>
           <input
@@ -129,7 +151,11 @@ function App() {
             style={{ width: "100%", margin: "10px 0", padding: 8 }}
           />
 
-          <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} style={{ marginBottom: 10 }} />
+          <input
+            type="file"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            style={{ marginBottom: 10 }}
+          />
           <button onClick={handleCreateFolder}>Create Folder</button>
 
           <div style={{ display: "flex", gap: 10 }}>
