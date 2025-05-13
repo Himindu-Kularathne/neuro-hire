@@ -26,6 +26,7 @@ import { useNavigate } from "react-router-dom";
 const AppHeader: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedView, setSelectedView] = useState<string>("Home");
+  const { setIsAuthenticated } = useAuth();
 
   const navigation = useNavigate();
 
@@ -34,6 +35,13 @@ const AppHeader: React.FC = () => {
   };
 
   const handleMenuItemClick = (view: string) => {
+    if (view === "logout") {
+      // Handle logout logic here
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      setIsAuthenticated(false);
+      return;
+    }
     setSelectedView(view);
     navigation(`/${view}`);
     toggleDrawer(false)();
@@ -121,7 +129,7 @@ const AppHeader: React.FC = () => {
               <ListItemText primary="My Account" />
             </ListItem>
 
-            <ListItem
+            {/* <ListItem
               button
               onClick={() => handleMenuItemClick("notifications")}
             >
@@ -129,7 +137,7 @@ const AppHeader: React.FC = () => {
                 <NotificationsIcon />
               </ListItemIcon>
               <ListItemText primary="Notifications" />
-            </ListItem>
+            </ListItem> */}
 
             <ListItem button onClick={() => handleMenuItemClick("preferences")}>
               <ListItemIcon>
