@@ -7,6 +7,9 @@ import {
   StepLabel,
   Paper,
 } from "@mui/material";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
+
 import * as pdfjsLib from "pdfjs-dist";
 import "pdfjs-dist/build/pdf.worker.entry";
 import { extractTextFromFile } from "../../utils/cv-parser";
@@ -23,6 +26,13 @@ import {
   createFolder,
   uploadFileToFolder,
 } from "../gdrive-view/googleDriveHelpers";
+import { useSnackbar } from "../../utils/snackbar";
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
+  function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  },
+);
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -35,6 +45,7 @@ interface FilePreview {
 }
 
 export default function Home() {
+  const snackbar = useSnackbar();
   const [activeStep, setActiveStep] = useState(0);
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
@@ -121,8 +132,10 @@ export default function Home() {
       return;
     }
     try {
+      // creates parent folder based on job name
       const mainFolderId = await createFolder(token, selectedJob.job_name);
-
+      // creates sub folders for All cvs , and selected CVs
+      // currently puts all cvs on both folders
       const allCVsFolderId = await createFolder(token, "All CVs", mainFolderId);
       const selectedCvsFolderId = await createFolder(
         token,
@@ -138,8 +151,7 @@ export default function Home() {
           selectedCvsFolderId,
         );
       }
-
-      alert(`Successfully uploaded ${files.length} files to Google Drive.`);
+      // snackbar.success(`Uploaded ${files.length} file(s) to Google Drive.`);
     } catch (err) {
       console.error("Google Drive upload failed", err);
       alert("Failed to upload to Google Drive.");
@@ -152,6 +164,7 @@ export default function Home() {
       if (profile) setProfile(profile);
     } catch (err) {
       console.error("Failed to fetch profile data", err);
+      // snackbar.error("Failed to upload to Google Drive.");
     }
   };
 
