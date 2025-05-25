@@ -3,10 +3,8 @@ import { gapi } from "gapi-script";
 import { Box, Button, Paper, Typography } from "@mui/material";
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
-const SCOPES = "https://www.googleapis.com/auth/drive.file";
-const DISCOVERY_DOCS = [
-  "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
-];
+const SCOPES = import.meta.env.VITE_GOOGLE_SCOPES;
+const DISCOVERY_DOCS = [import.meta.env.VITE_GOOGLE_DISCOVERY_DOCS];
 
 function App() {
   const [token, setToken] = useState<string | null>(null);
