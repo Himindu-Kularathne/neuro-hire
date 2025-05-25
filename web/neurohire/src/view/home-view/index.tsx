@@ -7,7 +7,6 @@ import {
   StepLabel,
   Paper,
 } from "@mui/material";
-import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 
 import * as pdfjsLib from "pdfjs-dist";
@@ -27,12 +26,6 @@ import {
   uploadFileToFolder,
 } from "../gdrive-view/googleDriveHelpers";
 import { useSnackbar } from "../../utils/snackbar";
-
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
-  function Alert(props, ref) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-  },
-);
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
