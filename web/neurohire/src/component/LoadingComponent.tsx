@@ -7,7 +7,7 @@ const Loader = ({ message = "Loading..." }) => {
       open={true}
       sx={{
         color: "#fff",
-        
+
         backgroundColor: "rgba(0, 0, 0, 0.5)",
         zIndex: (theme) => theme.zIndex.drawer + 1,
         flexDirection: "column",

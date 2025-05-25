@@ -11,53 +11,8 @@ const DISCOVERY_DOCS = [
 function App() {
   const [token, setToken] = useState<string | null>(null);
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [folderId, setFolderId] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [folderName, setFolderName] = useState("");
 
   console.log("Client", CLIENT_ID);
-
-  useEffect(() => {
-    // Load GAPI client
-    gapi.load("client", () => {
-      gapi.client.init({
-        apiKey: API_KEY,
-        discoveryDocs: DISCOVERY_DOCS,
-      });
-    });
-
-    // Initialize GIS
-    window.google.accounts.id.initialize({
-      client_id: CLIENT_ID,
-      callback: handleCredentialResponse,
-    });
-
-    // Show button
-    window.google.accounts.id.renderButton(
-      document.getElementById("googleSignInDiv")!,
-      {
-        theme: "outline",
-        size: "large",
-      }
-    );
-
-    window.google.accounts.id.prompt(
-      (notification: google.accounts.id.PromptMomentNotification) => {
-        if (notification.isNotDisplayed()) {
-          console.log(
-            "One Tap not displayed:",
-            notification.getNotDisplayedReason()
-          );
-        }
-        if (notification.isSkippedMoment()) {
-          console.log("User skipped One Tap");
-        }
-      }
-    );
-
-    // Optional auto prompt
-    // window.google.accounts.id.prompt();
-  }, []);
 
   const handleCredentialResponse = async (response: any) => {
     const jwt = response.credential;
@@ -77,90 +32,79 @@ function App() {
     tokenClient.requestAccessToken();
   };
 
-  const extractFolderId = (url: string) => {
-    const match = url.match(/\/folders\/([a-zA-Z0-9_-]+)/);
-    return match ? match[1] : "";
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("access_token", token);
+    }
+  }, [token]);
+
+  interface ExtendedGoogleAuthConfig {
+    client_id: string;
+    callback: (response: any) => void;
+    auto_select?: boolean;
+  }
+
+  const authConfig: ExtendedGoogleAuthConfig = {
+    client_id: CLIENT_ID,
+    callback: handleCredentialResponse,
   };
 
-  const HARDCODED_FOLDER_ID = "16s_GojXO_OULSpOmNaul952oVZrPm-Wm";
-
-  const handleUpload = async () => {
-    if (!file || !token)
-      return alert("Select a file and paste a valid folder link.");
-
-    const metadata = {
-      name: file.name,
-      parents: [HARDCODED_FOLDER_ID],
-    };
-
-    const form = new FormData();
-    form.append(
-      "metadata",
-      new Blob([JSON.stringify(metadata)], { type: "application/json" })
-    );
-    form.append("file", file);
-
-    const res = await fetch(
-      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id",
-      {
-        method: "POST",
-        headers: new Headers({ Authorization: `Bearer ${token}` }),
-        body: form,
-      }
-    );
-
-    const result = await res.json();
-    alert(`Uploaded file with ID: ${result.id}`);
-  };
-
-  const handleCreateFolder = async () => {
-    const metadata = {
-      name: folderName,
-      mimeType: "application/vnd.google-apps.folder",
-    };
-
-    const res = await fetch("https://www.googleapis.com/drive/v3/files", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(metadata),
+  useEffect(() => {
+    // Load GAPI client
+    gapi.load("client", () => {
+      gapi.client.init({
+        apiKey: API_KEY,
+        discoveryDocs: DISCOVERY_DOCS,
+      });
     });
 
-    const result = await res.json();
-    console.log("RESULT", result);
-    alert(`Created folder with ID: ${result.id}`);
-  };
+    // Initialize GIS
+    window.google.accounts.id.initialize(authConfig);
+
+    // Show button
+    window.google.accounts.id.renderButton(
+      document.getElementById("googleSignInDiv")!,
+      {
+        theme: "outline",
+        size: "large",
+      },
+    );
+
+    window.google.accounts.id.prompt(
+      (notification: google.accounts.id.PromptMomentNotification) => {
+        if (notification.isNotDisplayed()) {
+          console.log(
+            "One Tap not displayed:",
+            notification.getNotDisplayedReason(),
+          );
+        }
+        if (notification.isSkippedMoment()) {
+          console.log("User skipped One Tap");
+        }
+      },
+    );
+
+    // Optional auto prompt
+    // window.google.accounts.id.prompt();
+  }, []);
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem("access_token");
+    if (savedToken) {
+      setToken(savedToken);
+      setIsSignedIn(true);
+    }
+  }, []);
 
   return (
     <div style={{ padding: 20 }}>
       <h2>Google Drive Integration</h2>
 
       {!isSignedIn ? (
-        <div className="w-[300px] bg-black">
-          Hellooo
-          <div id="googleSignInDiv"></div>
-        </div>
+        <div id="googleSignInDiv"></div>
       ) : (
         <>
-          <input
-            type="text"
-            placeholder="Folder Name"
-            onChange={(e) => setFolderName(e.target.value)}
-            style={{ width: "100%", margin: "10px 0", padding: 8 }}
-          />
-
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-            style={{ marginBottom: 10 }}
-          />
-          <button onClick={handleCreateFolder}>Create Folder</button>
-
-          <div style={{ display: "flex", gap: 10 }}>
-            <button onClick={handleUpload}>Upload File</button>
-          </div>
+          <div>Signed in successfully!</div>
         </>
       )}
     </div>

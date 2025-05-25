@@ -25,7 +25,7 @@ const RegisterUser: React.FC<RegisterUserProps> = ({
   handledRegister,
 }) => {
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setRegisterForm((prev) => ({

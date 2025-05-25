@@ -7,6 +7,8 @@ import {
   StepLabel,
   Paper,
 } from "@mui/material";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
+
 import * as pdfjsLib from "pdfjs-dist";
 import "pdfjs-dist/build/pdf.worker.entry";
 import { extractTextFromFile } from "../../utils/cv-parser";
@@ -19,6 +21,11 @@ import StepUpload from "./steps/StepUpload";
 import StepJobSelect from "./steps/StepJobSelect";
 import StepPreview from "./steps/StepPreview";
 import StepResult from "./steps/StepResult";
+import {
+  createFolder,
+  uploadFileToFolder,
+} from "../gdrive-view/googleDriveHelpers";
+import { useSnackbar } from "../../utils/snackbar";
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -31,10 +38,12 @@ interface FilePreview {
 }
 
 export default function Home() {
+  const snackbar = useSnackbar();
   const [activeStep, setActiveStep] = useState(0);
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
-  const { setResumes, filePreviews, setFilePreviews } = useResume();
+  const { setResumes, filePreviews, setFilePreviews, selectedJob } =
+    useResume();
   const { setProfile } = useUser();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -44,7 +53,7 @@ export default function Home() {
   const removeFile = (fileName: string) => {
     setFiles((prevFiles) => prevFiles.filter((f) => f.name !== fileName));
     setFilePreviews((prevPreviews: FilePreview[]) =>
-      prevPreviews.filter((p) => p.name !== fileName)
+      prevPreviews.filter((p) => p.name !== fileName),
     );
   };
 
@@ -56,7 +65,7 @@ export default function Home() {
           const result = await new Promise<string | null>((resolve) => {
             fileReader.onload = async () => {
               const typedArray = new Uint8Array(
-                fileReader.result as ArrayBuffer
+                fileReader.result as ArrayBuffer,
               );
               const pdf = await pdfjsLib.getDocument(typedArray).promise;
               const page = await pdf.getPage(1);
@@ -75,7 +84,7 @@ export default function Home() {
         } else {
           return { name: file.name, src: null };
         }
-      })
+      }),
     );
     setFilePreviews(previews);
   };
@@ -105,6 +114,42 @@ export default function Home() {
   const handleFinalSubmit = () => {
     // submit to the backend
     setActiveStep(3); // Go to results
+    handleGoogleDrive();
+  };
+
+  const handleGoogleDrive = async () => {
+    console.log("Job name", selectedJob.job_name);
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      alert("You must sign in with Google first.");
+      return;
+    }
+    try {
+      // creates parent folder based on job name
+      const mainFolderId = await createFolder(token, selectedJob.job_name);
+      // creates sub folders for All cvs , and selected CVs
+      // currently puts all cvs on both folders
+      const allCVsFolderId = await createFolder(token, "All CVs", mainFolderId);
+      const selectedCvsFolderId = await createFolder(
+        token,
+        "Selected CVs",
+        mainFolderId,
+      );
+
+      for (const file of files) {
+        const fileIdAll = await uploadFileToFolder(token, file, allCVsFolderId);
+        const fileIdSelected = await uploadFileToFolder(
+          token,
+          file,
+          selectedCvsFolderId,
+        );
+      }
+      snackbar.success(`Uploaded ${files.length} file(s) to Google Drive.`);
+    } catch (err) {
+      console.log("Error", err);
+      console.error("Google Drive upload failed", err);
+      snackbar.error("Failed to upload to Google Drive.");
+    }
   };
 
   const fetchProfileData = async () => {

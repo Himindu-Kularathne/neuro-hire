@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -10,28 +10,27 @@ import {
 } from "@mui/material";
 import { useUser } from "../../context/UserContext";
 
-
 interface CompanyProfile {
-    profile_id: string;
-    profile_name: string;
-    profile_description: string;
-    profile_email: string;
-    profile_phone: string;
-    profile_website: string;
-    profile_address: string;
-    profile_logo: string;
-    active: boolean;
+  profile_id: string;
+  profile_name: string;
+  profile_description: string;
+  profile_email: string;
+  profile_phone: string;
+  profile_website: string;
+  profile_address: string;
+  profile_logo: string;
+  active: boolean;
 }
 
 const CompanyProfileView: React.FC = () => {
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-    const {profile} = useUser();
+  const { profile } = useUser();
 
-    useEffect(() => {
-        console.log(profile);
-    }, [profile]);
+  useEffect(() => {
+    console.log(profile);
+  }, [profile]);
 
   return (
     <Box sx={{ p: 4 }}>
@@ -40,7 +39,12 @@ const CompanyProfileView: React.FC = () => {
         <Avatar
           src={profile.profile_logo}
           alt={profile.profile_name}
-          sx={{ width: 80, height: 80, bgcolor: "#fff", border: "1px solid #ddd" }}
+          sx={{
+            width: 80,
+            height: 80,
+            bgcolor: "#fff",
+            border: "1px solid #ddd",
+          }}
         />
         <Box>
           <Typography variant="h4" fontWeight={600}>

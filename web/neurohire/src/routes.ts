@@ -71,7 +71,7 @@ export const routes: RouteObjectWithRole[] = [
 ];
 
 export const getActiveRoutes = (
-  routes: RouteObjectWithRole[]
+  routes: RouteObjectWithRole[],
 ): NonIndexRouteObject[] => {
   return routes.map((route) => {
     return {

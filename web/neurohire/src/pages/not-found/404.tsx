@@ -14,11 +14,11 @@ export default function Error() {
     >
       <Typography variant="h1">404 | Not Found</Typography>
       <Link to="/">
-      <Button color="secondary" variant="contained">
-        {" "}
-        Go Home{" "}
-      </Button>
-        </Link>
+        <Button color="secondary" variant="contained">
+          {" "}
+          Go Home{" "}
+        </Button>
+      </Link>
     </Box>
   );
 }

@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 
-
 const UserContext = React.createContext<any>(null);
 
 export function useUser() {

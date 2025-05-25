@@ -40,14 +40,14 @@ export function JobProvider({ children }: any) {
     }
   };
 
-  const updateJobData = async (jobId : string, jobData: any) => {
+  const updateJobData = async (jobId: string, jobData: any) => {
     setJobsLoading(true);
     try {
       const response = await updateJob(jobId, jobData);
       if (response.job_id) {
         console.log("Job updated successfully:", response);
         setJobs((prevJobs: any) =>
-          prevJobs.map((j: any) => (j.job_id === jobId ? response : j))
+          prevJobs.map((j: any) => (j.job_id === jobId ? response : j)),
         );
       } else {
         console.error("Failed to update job");
