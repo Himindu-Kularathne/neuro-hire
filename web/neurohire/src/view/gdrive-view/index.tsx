@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { gapi } from "gapi-script";
+import { Box, Button, Paper, Typography } from "@mui/material";
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
@@ -49,6 +50,23 @@ function App() {
     callback: handleCredentialResponse,
   };
 
+  const handleSignOut = () => {
+    if (token) {
+      // Revoke the token (runtime-safe)
+      (window.google.accounts.oauth2 as any).revoke(token, () => {
+        console.log("Access token revoked");
+        localStorage.removeItem("access_token");
+        setToken(null);
+        setIsSignedIn(false);
+      });
+    } else {
+      // Just clear state if no token
+      localStorage.removeItem("access_token");
+      setToken(null);
+      setIsSignedIn(false);
+    }
+  };
+
   useEffect(() => {
     // Load GAPI client
     gapi.load("client", () => {
@@ -96,17 +114,83 @@ function App() {
     }
   }, []);
 
-  return (
-    <div style={{ padding: 20 }}>
-      <h2>Google Drive Integration</h2>
+  const signInDiv = document.getElementById("googleSignInDiv");
+  if (signInDiv) {
+    window.google.accounts.id.renderButton(signInDiv, {
+      theme: "filled_blue",
+      size: "large",
+      shape: "pill",
+      width: 300,
+      text: "continue_with",
+      logo_alignment: "left",
+    });
+  }
 
-      {!isSignedIn ? (
-        <div id="googleSignInDiv"></div>
-      ) : (
-        <>
-          <div>Signed in successfully!</div>
-        </>
-      )}
+  return (
+    <div style={{ padding: 32 }}>
+      <Paper
+        elevation={0}
+        sx={{ padding: 4, maxWidth: 1400, margin: "0 auto" }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 2,
+          }}
+        >
+          <Typography variant="h4" fontWeight="bold" color="primary">
+            Resume Organization Made Easy
+          </Typography>
+
+          <Typography variant="h6">
+            When you submit resumes for screening, we’ll automatically create a
+            folder named after the job title. Inside, you’ll find:
+          </Typography>
+
+          <Typography variant="h6" sx={{ ml: 2 }}>
+            • <strong> 📁 All CVs</strong> – Contains every submitted resume.
+            <br />• <strong>✅ Selected CVs</strong> – Stores only the
+            shortlisted candidates.
+          </Typography>
+
+          <Typography variant="h6">
+            Connecting your Google Drive keeps your resume data organized,
+            accessible, and securely stored in your own cloud.
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            mt: 4,
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          {!isSignedIn ? (
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <div id="googleSignInDiv" />
+            </Box>
+          ) : (
+            <Box sx={{ textAlign: "center" }}>
+              <Typography variant="body1" color="success.main" sx={{ mb: 2 }}>
+                ✅ Signed in successfully!
+              </Typography>
+              <Button variant="outlined" color="error" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            </Box>
+          )}
+        </Box>
+      </Paper>
     </div>
   );
 }
