@@ -4,7 +4,7 @@ export async function getProfile() {
   try {
     const profileData = await fetchApi(
       "http://localhost:3005/api/profile",
-      "GET"
+      "GET",
     );
     return profileData;
   } catch (error) {

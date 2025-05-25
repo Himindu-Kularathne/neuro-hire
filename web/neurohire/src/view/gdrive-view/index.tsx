@@ -60,7 +60,7 @@ function App() {
     const form = new FormData();
     form.append(
       "metadata",
-      new Blob([JSON.stringify(metadata)], { type: "application/json" })
+      new Blob([JSON.stringify(metadata)], { type: "application/json" }),
     );
     form.append("file", file);
 
@@ -70,7 +70,7 @@ function App() {
         method: "POST",
         headers: new Headers({ Authorization: `Bearer ${token}` }),
         body: form,
-      }
+      },
     );
 
     const result = await res.json();
@@ -143,7 +143,7 @@ function App() {
       {
         theme: "outline",
         size: "large",
-      }
+      },
     );
 
     window.google.accounts.id.prompt(
@@ -151,13 +151,13 @@ function App() {
         if (notification.isNotDisplayed()) {
           console.log(
             "One Tap not displayed:",
-            notification.getNotDisplayedReason()
+            notification.getNotDisplayedReason(),
           );
         }
         if (notification.isSkippedMoment()) {
           console.log("User skipped One Tap");
         }
-      }
+      },
     );
 
     // Optional auto prompt

@@ -9,14 +9,14 @@ import {
 
 export const doCreateUserWithEmailAndPassword = (
   email: string,
-  password: string
+  password: string,
 ): Promise<any> => {
   return createUserWithEmailAndPassword(auth, email, password);
 };
 
 export const doSignInWithEmailAndPassword = (
   email: string,
-  password: string
+  password: string,
 ): Promise<any> => {
   return signInWithEmailAndPassword(auth, email, password);
 };

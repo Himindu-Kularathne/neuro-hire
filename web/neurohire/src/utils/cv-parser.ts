@@ -2,11 +2,11 @@ import * as pdfjsLib from "pdfjs-dist";
 import mammoth from "mammoth";
 
 // Required for pdfjs to work in web
-pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
-
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
 
 export async function extractTextFromFile(file: File): Promise<string> {
-  const fileType = file.name.split('.').pop()?.toLowerCase();
+  const fileType = file.name.split(".").pop()?.toLowerCase();
 
   if (fileType === "pdf") {
     return await extractTextFromPDF(file);

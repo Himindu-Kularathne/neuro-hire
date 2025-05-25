@@ -26,17 +26,22 @@ declare global {
         getDismissedReason(): string;
       }
 
-      function initialize(config: { client_id: string; callback: (response: any) => void }): void;
+      function initialize(config: {
+        client_id: string;
+        callback: (response: any) => void;
+      }): void;
 
       function renderButton(
         parent: HTMLElement,
         options: {
           theme: "outline" | "filled_blue" | "filled_black";
           size: "small" | "medium" | "large";
-        }
+        },
       ): void;
 
-      function prompt(callback?: (notification: PromptMomentNotification) => void): void;
+      function prompt(
+        callback?: (notification: PromptMomentNotification) => void,
+      ): void;
     }
 
     namespace accounts.oauth2 {

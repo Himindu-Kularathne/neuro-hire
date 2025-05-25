@@ -38,7 +38,8 @@ export default function Home() {
   const [activeStep, setActiveStep] = useState(0);
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
-  const { setResumes, filePreviews, setFilePreviews } = useResume();
+  const { setResumes, filePreviews, setFilePreviews, selectedJob } =
+    useResume();
   const { setProfile } = useUser();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -48,7 +49,7 @@ export default function Home() {
   const removeFile = (fileName: string) => {
     setFiles((prevFiles) => prevFiles.filter((f) => f.name !== fileName));
     setFilePreviews((prevPreviews: FilePreview[]) =>
-      prevPreviews.filter((p) => p.name !== fileName)
+      prevPreviews.filter((p) => p.name !== fileName),
     );
   };
 
@@ -60,7 +61,7 @@ export default function Home() {
           const result = await new Promise<string | null>((resolve) => {
             fileReader.onload = async () => {
               const typedArray = new Uint8Array(
-                fileReader.result as ArrayBuffer
+                fileReader.result as ArrayBuffer,
               );
               const pdf = await pdfjsLib.getDocument(typedArray).promise;
               const page = await pdf.getPage(1);
@@ -79,7 +80,7 @@ export default function Home() {
         } else {
           return { name: file.name, src: null };
         }
-      })
+      }),
     );
     setFilePreviews(previews);
   };
@@ -113,18 +114,29 @@ export default function Home() {
   };
 
   const handleGoogleDrive = async () => {
-    const token = localStorage.getItem("access_token"); // Or manage via context/state
+    console.log("Job name", selectedJob.job_name);
+    const token = localStorage.getItem("access_token");
     if (!token) {
       alert("You must sign in with Google first.");
       return;
     }
-
     try {
-      const folderId = await createFolder(token, "Uploaded Resumes");
+      const mainFolderId = await createFolder(token, selectedJob.job_name);
+
+      const allCVsFolderId = await createFolder(token, "All CVs", mainFolderId);
+      const selectedCvsFolderId = await createFolder(
+        token,
+        "Selected CVs",
+        mainFolderId,
+      );
 
       for (const file of files) {
-        const fileId = await uploadFileToFolder(token, file, folderId);
-        console.log(`Uploaded ${file.name} with ID: ${fileId}`);
+        const fileIdAll = await uploadFileToFolder(token, file, allCVsFolderId);
+        const fileIdSelected = await uploadFileToFolder(
+          token,
+          file,
+          selectedCvsFolderId,
+        );
       }
 
       alert(`Successfully uploaded ${files.length} files to Google Drive.`);

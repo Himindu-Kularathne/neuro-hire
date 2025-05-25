@@ -3,7 +3,7 @@ let isRefreshing = false;
 export async function fetchApi(
   url: string,
   method = "GET",
-  body: any = null
+  body: any = null,
 ): Promise<any> {
   const getAccessToken = () => localStorage.getItem("accessToken");
   const getRefreshToken = () => localStorage.getItem("refreshToken");

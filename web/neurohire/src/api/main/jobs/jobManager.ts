@@ -15,7 +15,7 @@ export async function createJob(jobData: any) {
     const response = await fetchApi(
       "http://localhost:3005/api/job/",
       "POST",
-      jobData
+      jobData,
     );
     return response;
   } catch (error) {
@@ -31,7 +31,7 @@ export async function updateJob(jobId: string, jobData: any) {
     const response = await fetchApi(
       `http://localhost:3005/api/job/${jobId}`,
       "PUT",
-      jobData
+      jobData,
     );
     return response;
   } catch (error) {

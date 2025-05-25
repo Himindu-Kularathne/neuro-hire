@@ -12,7 +12,7 @@ export async function login(email: string, password: string) {
       {
         email,
         password,
-      }
+      },
     );
     if (responseData?.accessToken) {
       localStorage.setItem("accessToken", responseData.accessToken);
@@ -39,7 +39,7 @@ export async function refreshAccessToken() {
       "POST",
       {
         refreshToken,
-      }
+      },
     );
     if (responseData?.accessToken) {
       localStorage.setItem("accessToken", responseData.accessToken);
