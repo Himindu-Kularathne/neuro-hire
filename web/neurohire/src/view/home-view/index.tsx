@@ -144,10 +144,11 @@ export default function Home() {
           selectedCvsFolderId,
         );
       }
-      // snackbar.success(`Uploaded ${files.length} file(s) to Google Drive.`);
+      snackbar.success(`Uploaded ${files.length} file(s) to Google Drive.`);
     } catch (err) {
+      console.log("Error", err);
       console.error("Google Drive upload failed", err);
-      alert("Failed to upload to Google Drive.");
+      snackbar.error("Failed to upload to Google Drive.");
     }
   };
 
@@ -157,7 +158,6 @@ export default function Home() {
       if (profile) setProfile(profile);
     } catch (err) {
       console.error("Failed to fetch profile data", err);
-      // snackbar.error("Failed to upload to Google Drive.");
     }
   };
 
