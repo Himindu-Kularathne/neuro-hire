@@ -14,6 +14,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import WorkIcon from "@mui/icons-material/Work";
 import { createJob } from "../../api/main/jobs/jobManager";
+import { useSnackbar } from "../../utils/snackbar";
 
 export default function AddJob() {
   const [jobData, setJobData] = useState({
@@ -25,6 +26,7 @@ export default function AddJob() {
   });
 
   const [skillInput, setSkillInput] = useState("");
+  const snackbar = useSnackbar();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -68,8 +70,10 @@ export default function AddJob() {
         education_required: "",
       });
       setSkillInput("");
+      snackbar.success("Job created successfully");
     } else {
       console.error("Failed to create job");
+      snackbar.error("Job created successfully");
     }
   };
 
