@@ -13,10 +13,6 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import { useDropzone } from "react-dropzone";
-import {
-  createFolder,
-  uploadFileToFolder,
-} from "../../gdrive-view/googleDriveHelpers";
 
 interface Props {
   files: File[];
