@@ -6,6 +6,7 @@ import ProfilePreferences from "./components/ProfilePreferences";
 import ModelPreferences from "./components/ModelPreferences";
 import NotificationPreferences from "./components/NotificationPreferences";
 import RegisterUser from "./components/RegisterUser";
+import GDriveIntegration from "./components/GDriveIntegration";
 const PreferencesView: React.FC = () => {
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -18,6 +19,7 @@ const PreferencesView: React.FC = () => {
     model: false,
     notifications: false,
     register: false,
+    gdrive: false,
   });
 
   const [registerForm, setRegisterForm] = useState({
@@ -112,6 +114,13 @@ const PreferencesView: React.FC = () => {
           setRegisterForm={setRegisterForm}
           handledRegister={handledRegister}
         />
+      </Section>
+      <Section
+        title="Google Drive Integration"
+        open={openSections.gdrive}
+        toggle={() => toggleSection("gdrive")}
+      >
+        <GDriveIntegration />
       </Section>
     </Box>
   );

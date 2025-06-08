@@ -169,7 +169,6 @@ export default function Home() {
     <Box
       sx={{
         p: 4,
-        backgroundColor: "#f9f9f9",
         minHeight: "100vh",
         alignItems: "center",
       }}

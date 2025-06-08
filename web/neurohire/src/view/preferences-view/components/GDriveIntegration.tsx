@@ -6,7 +6,7 @@ const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 const SCOPES = import.meta.env.VITE_GOOGLE_SCOPES;
 const DISCOVERY_DOCS = [import.meta.env.VITE_GOOGLE_DISCOVERY_DOCS];
 
-function App() {
+const GDriveIntegration: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const tokenClientRef = useRef<any>(null);
@@ -127,6 +127,6 @@ function App() {
       </Paper>
     </div>
   );
-}
+};
 
-export default App;
+export default GDriveIntegration;
