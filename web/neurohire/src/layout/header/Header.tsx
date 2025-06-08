@@ -16,13 +16,11 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { APP_DATA } from "../../utils/constants";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import AddToDriveIcon from "@mui/icons-material/AddToDrive";
 
 const AppHeader: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
