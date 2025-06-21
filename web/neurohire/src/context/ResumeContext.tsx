@@ -10,6 +10,7 @@ export function useResume() {
 export function ResumeProvider({ children }: any) {
   const [resumes, setResumes] = useState<IResume[]>([]);
   const [selectedJob, setSelectedJob] = useState<any>(null);
+  const [finalResults, setFinalResults] = useState<any>(null);
   const [filePreviews, setFilePreviews] = useState<
     { name: string; src: string | null }[]
   >([]);
@@ -23,6 +24,8 @@ export function ResumeProvider({ children }: any) {
         setSelectedJob,
         filePreviews,
         setFilePreviews,
+        finalResults,
+        setFinalResults,
       }}
     >
       {children}

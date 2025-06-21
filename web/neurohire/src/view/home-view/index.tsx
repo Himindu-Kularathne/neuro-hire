@@ -43,7 +43,7 @@ export default function Home() {
   const [activeStep, setActiveStep] = useState(0);
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
-  const { setResumes, filePreviews, setFilePreviews, selectedJob } =
+  const { setResumes, filePreviews, setFilePreviews, selectedJob, setFinalResults } =
     useResume();
   const { setProfile } = useUser();
 
@@ -126,6 +126,7 @@ export default function Home() {
       const result = await processResumes(body);
       if (result) {
         console.log("Resumes processed successfully:", result);
+        setFinalResults(result);
         snackbar.success("Resumes processed successfully.");
       }
     } catch (error) {
@@ -214,15 +215,17 @@ export default function Home() {
         ))}
       </Stepper>
 
-      <Paper
-        elevation={3}
-        sx={{
-          p: 3,
-          margin: "30px",
-          borderRadius: 2,
-          justifyItems: "center",
-          height: "100%",
-        }}
+      <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+        padding: "20px",
+        boxSizing: "border-box",
+        
+      }}
       >
         {/* Step Components */}
         {activeStep === 0 && (
@@ -248,7 +251,7 @@ export default function Home() {
           />
         )}
         {activeStep === 3 && <StepResult />}
-      </Paper>
+      </div>
     </Box>
   );
 }
