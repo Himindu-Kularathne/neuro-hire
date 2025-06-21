@@ -10,18 +10,18 @@ import {
   Divider,
   Tooltip,
   Paper,
+  useTheme,
 } from "@mui/material";
-import { useResume } from "../../../context/ResumeContext";
-import ArrowBackIcon from "@mui/icons-material/ArrowForward";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useDrop, useDrag, DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DeleteIcon from "@mui/icons-material/Delete";
-import FileCopyIcon from "@mui/icons-material/FileCopy";
 import SendIcon from "@mui/icons-material/Send";
+import { useResume } from "../../../context/ResumeContext";
 
 interface Props {
   onSubmit: () => void;
-  onPrev: () => void; 
+  onPrev: () => void;
 }
 
 const ItemType = {
@@ -42,11 +42,13 @@ const DraggableResumeCard = ({ preview }: { preview: any }) => {
       ref={dragRef}
       sx={{
         opacity: isDragging ? 0.5 : 1,
-        transition: "transform 0.2s ease-in-out",
+        transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+        boxShadow: 4, // Default shadow
         "&:hover": {
-          transform: "scale(1.03)",
-          boxShadow: 5,
+          transform: "scale(1.05)",
+          boxShadow: "0 8px 24px rgba(33, 150, 243, 0.3)",
         },
+        borderRadius: 3,
       }}
     >
       {preview.src ? (
@@ -88,12 +90,11 @@ const DraggableResumeCard = ({ preview }: { preview: any }) => {
 };
 
 const TrashBin = ({ onDrop }: { onDrop: (name: string) => void }) => {
-  const [{ isOver, canDrop }, dropRef] = useDrop(() => ({
+  const [{ isOver }, dropRef] = useDrop(() => ({
     accept: ItemType.RESUME,
     drop: (item: { name: string }) => onDrop(item.name),
     collect: (monitor) => ({
       isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
     }),
   }));
 
@@ -112,15 +113,17 @@ const TrashBin = ({ onDrop }: { onDrop: (name: string) => void }) => {
         justifyContent: "center",
         fontSize: 18,
         fontWeight: "medium",
+        transition: "background-color 0.3s",
       }}
     >
-      <DeleteIcon sx={{ marginRight: 1 }} />
-      {isOver ? "Drop here to remove" : "Drag and drop resumes here to remove"}
+      <DeleteIcon sx={{ mr: 1 }} />
+      {isOver ? "Drop here to remove" : "Drag resumes here to remove"}
     </Box>
   );
 };
 
 const StepPreview: React.FC<Props> = ({ onSubmit, onPrev }) => {
+  const theme = useTheme();
   const { filePreviews, selectedJob, setFilePreviews } = useResume();
 
   const handleRemoveResume = (name: string) => {
@@ -137,16 +140,20 @@ const StepPreview: React.FC<Props> = ({ onSubmit, onPrev }) => {
           Here's a summary of your selected job and uploaded resumes.
         </Typography>
 
-        {/* Selected Job */}
+        {/* Selected Job with enhanced design */}
         {selectedJob && (
-          <Paper
-            elevation={2}
+          <Box
             sx={{
               mb: 5,
-              borderLeft: "6px solid #1976d2",
-              p: 2,
-              backgroundColor: "#f0f7ff",
-              borderRadius: 2,
+              p: 3,
+              borderRadius: 4,
+              background: "linear-gradient(135deg, #e3f2fd, #ffffff)",
+              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                transform: "translateY(-5px)",
+                boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)",
+              },
             }}
           >
             <Typography
@@ -157,13 +164,14 @@ const StepPreview: React.FC<Props> = ({ onSubmit, onPrev }) => {
             >
               {selectedJob.job_name}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Expirence Required: {selectedJob.experience}
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Experience Required: {selectedJob.experience}
             </Typography>
+            <Divider sx={{ my: 1 }} />
             <Typography variant="body2" color="text.secondary">
-              Job Description: {selectedJob.description}
+              {selectedJob.description}
             </Typography>
-          </Paper>
+          </Box>
         )}
 
         {/* Resume Previews */}
@@ -178,7 +186,6 @@ const StepPreview: React.FC<Props> = ({ onSubmit, onPrev }) => {
           ))}
         </Grid>
 
-        {/* Trash Bin */}
         <TrashBin onDrop={handleRemoveResume} />
 
         <Divider sx={{ my: 5 }} />
