@@ -1,88 +1,52 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
+from transformers import pipeline
 
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain_chroma import Chroma
-from langchain.schema.output_parser import StrOutputParser
-from langchain_google_genai import GoogleGenerativeAI
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema.runnable import RunnablePassthrough
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.docstore.document import Document
+app = FastAPI()
 
-# Define request and response models
+# Schemas
 class Resume(BaseModel):
     id: str
     content: str
 
-class RequestBody(BaseModel):
+class RAGRequest(BaseModel):
     jobDescription: str
     resumes: List[Resume]
 
-class ResponseBody(BaseModel):
-    ranked_ids: List[str]
+class RankedResume(BaseModel):
+    id: str
+    score: float
 
-# Initialize FastAPI app
-app = FastAPI()
+class RankedResponse(BaseModel):
+    ranked_resumes: List[RankedResume]
 
-# Initialize components once
-embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+# Load Hugging Face zero-shot-classification pipeline
+classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
 
-llm = GoogleGenerativeAI(
-    model="models/gemini-1.5-pro-latest",
-    google_api_key="<API-Key>",  # Replace with secure loading in prod
-    temperature=0.1,
-    max_output_tokens=500,
-)
-
-output_parser = StrOutputParser()
-
-template = """
-Given a job description, identify how relevant the CV is based on the provided context.
-
-Job Description:
-{question}
-
-CV Content:
-{context}
-
-Relevance (highly relevant, somewhat relevant, not relevant):
-"""
-
-prompt = ChatPromptTemplate.from_template(template)
-
-chain = (
-    {"context": RunnablePassthrough(), "question": RunnablePassthrough()}
-    | prompt
-    | llm
-    | output_parser
-)
-
-@app.post("/rank-resumes", response_model=ResponseBody)
-def rank_resumes(request: RequestBody):
+@app.post("/rank", response_model=RankedResponse)
+def rank_resumes(data: RAGRequest):
     try:
-        # Convert to langchain Documents
-        documents = [
-            Document(page_content=resume.content, metadata={"id": resume.id})
-            for resume in request.resumes
-        ]
+        print("⏳ Received request to /rank resumes")
+        results = []
 
-        # Optional: split for better embedding chunking
-        splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=50)
-        split_docs = splitter.split_documents(documents)
+        for i, resume in enumerate(data.resumes):
+            print(f"🔍 Processing resume {i+1}/{len(data.resumes)} — ID: {resume.id}")
+            hypothesis = data.jobDescription
+            premise = resume.content
 
-        # Vectorstore and retrieval
-        vectorstore = Chroma.from_documents(split_docs, embedding=embedding_model)
-        retriever = vectorstore.as_retriever(search_kwargs={"k": len(request.resumes)})
+            result = classifier(premise, candidate_labels=[hypothesis], multi_label=False)
+            score = result["scores"][0]
+            print(f"📈 Score for Resume {resume.id}: {score:.4f}")
 
-        # Retrieve based on job description
-        retrieved_docs = retriever.get_relevant_documents(request.jobDescription)  # Use get_relevant_documents instead of invoke
+            results.append(RankedResume(id=resume.id, score=score))
 
-        # Rank documents based on similarity (optional scoring step if needed)
-        ranked_ids = [doc.metadata["id"] for doc in retrieved_docs]  # If you have a score, you could sort this list
+        # Sort resumes by score in descending order
+        sorted_results = sorted(results, key=lambda x: x.score, reverse=True)
+        print(f"🏁 Ranking complete. Top score: {sorted_results[0].score:.4f}")
 
-        return ResponseBody(ranked_ids=ranked_ids)
-    
+        return RankedResponse(ranked_resumes=sorted_results)
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing request: {str(e)}")
+        print("💥 Exception occurred:", str(e))
+        raise HTTPException(status_code=500, detail=str(e))
