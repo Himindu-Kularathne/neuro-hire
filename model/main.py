@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
 
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain.schema.output_parser import StrOutputParser
 from langchain_google_genai import GoogleGenerativeAI
@@ -10,6 +10,12 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.docstore.document import Document
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+google_api_key = os.getenv("GOOGLE_API_KEY")
 
 # Define request and response models
 class Resume(BaseModel):
@@ -31,7 +37,7 @@ embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mp
 
 llm = GoogleGenerativeAI(
     model="models/gemini-1.5-pro-latest",
-    google_api_key="<API-Key>",  # Replace with secure loading in prod
+    google_api_key=google_api_key,  # Replace with secure loading in prod
     temperature=0.1,
     max_output_tokens=500,
 )
@@ -72,6 +78,10 @@ def rank_resumes(request: RequestBody):
         splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=50)
         split_docs = splitter.split_documents(documents)
 
+        # DEBUG: print out split_docs metadata
+        for doc in split_docs:
+            print(doc.metadata)  # Should contain 'id'
+
         # Vectorstore and retrieval
         vectorstore = Chroma.from_documents(split_docs, embedding=embedding_model)
         retriever = vectorstore.as_retriever(search_kwargs={"k": len(request.resumes)})
@@ -79,6 +89,10 @@ def rank_resumes(request: RequestBody):
         # Retrieve based on job description
         retrieved_docs = retriever.get_relevant_documents(request.jobDescription)  # Use get_relevant_documents instead of invoke
 
+        ranked_ids_with_scores = [
+            {"id": doc.metadata["id"], "score": doc.metadata.get("score", "n/a")}
+            for doc in retrieved_docs
+        ]
         # Rank documents based on similarity (optional scoring step if needed)
         ranked_ids = [doc.metadata["id"] for doc in retrieved_docs]  # If you have a score, you could sort this list
 
