@@ -21,7 +21,7 @@ import SendIcon from "@mui/icons-material/Send";
 
 interface Props {
   onSubmit: () => void;
-  onPrev: () => void; // Add onPrev prop for going back to the previous step
+  onPrev: () => void; 
 }
 
 const ItemType = {
