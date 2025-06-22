@@ -15,7 +15,6 @@ export async function getProfile() {
     );
     return profileData;
   } catch (error) {
-    console.error("Failed to fetch profile data:");
     throw error;
   }
 }

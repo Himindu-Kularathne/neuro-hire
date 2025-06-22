@@ -64,11 +64,8 @@ export default function AddJob() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Job Data Submitted:", jobData);
     const response = await createJob(jobData);
-    console.log("Response:", response);
     if (response) {
-      console.log("Job created successfully:", response);
       setJobData({
         job_name: "",
         description: "",
@@ -79,7 +76,6 @@ export default function AddJob() {
       setSkillInput("");
       snackbar.success("Job created successfully");
     } else {
-      console.error("Failed to create job");
       snackbar.error("Job created successfully");
     }
   };

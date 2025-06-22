@@ -5,7 +5,6 @@ Licensed under the MIT License.
 See LICENSE file in the project root for full license information.
 */
 
-
 let isRefreshing = false;
 
 export async function fetchApi(
@@ -65,7 +64,6 @@ export async function fetchApi(
         localStorage.setItem("accessToken", newToken);
         return await makeRequest(newToken);
       } catch (refreshErr) {
-        console.error("Refresh failed", refreshErr);
         throw refreshErr;
       } finally {
         isRefreshing = false;

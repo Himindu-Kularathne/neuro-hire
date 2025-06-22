@@ -25,7 +25,6 @@ import ReactMarkdown from "react-markdown";
 const StepResult: React.FC = () => {
   const { finalResults } = useResume();
   const rankedResumes = finalResults?.ranked_resumes || [];
-
   if (rankedResumes.length === 0) {
     return (
       <Box textAlign="center" mt={4}>
@@ -50,7 +49,6 @@ const StepResult: React.FC = () => {
           🌟 Resume Ranking Results
         </Typography>
       </motion.div>
-
       <Stack spacing={3} maxWidth={600} margin="0 auto">
         {rankedResumes.map((resume: any, index: number) => {
           const [showReason, setShowReason] = useState(false);

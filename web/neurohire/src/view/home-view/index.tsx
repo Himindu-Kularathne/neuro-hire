@@ -62,6 +62,7 @@ export default function Home() {
   } = useResume();
   const { setProfile } = useUser();
   const { fetchJobsData } = useJob();
+  const { numCVs } = useResume();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
@@ -122,9 +123,7 @@ export default function Home() {
       }
       setResumes(extractedData);
       setActiveStep(1);
-    } catch (error) {
-      console.error("Error extracting resume:", error);
-    }
+    } catch (error) {}
     setLoading(false);
   };
 
@@ -139,27 +138,26 @@ export default function Home() {
           content: file.src ? file.src : "",
         })),
       };
-      console.log("Processing resumes with body:", body);
       const result = await processResumes(body);
       if (result) {
-        console.log("Resumes processed successfully:", result);
         setFinalResults(result);
         snackbar.success("Resumes processed successfully.");
+        return result;
       }
     } catch (error) {
-      console.error("Error processing resumes:", error);
       snackbar.error("Failed to process resumes.");
     }
   };
 
-  const handleFinalSubmit = () => {
+  const handleFinalSubmit = async () => {
     setActiveStep(3);
-    handleGoogleDrive();
-    handleProcessResumes();
+    const result = await handleProcessResumes();
+    if (result) {
+      await handleGoogleDrive(result);
+    }
   };
 
-  const handleGoogleDrive = async () => {
-    console.log("Job name", selectedJob.job_name);
+  const handleGoogleDrive = async (results: any) => {
     const token = localStorage.getItem("access_token");
     if (!token) {
       alert("You must sign in with Google first.");
@@ -177,18 +175,21 @@ export default function Home() {
         mainFolderId,
       );
 
+      // Upload all CVs to "All CVs" folder
       for (const file of files) {
-        const fileIdAll = await uploadFileToFolder(token, file, allCVsFolderId);
-        const fileIdSelected = await uploadFileToFolder(
-          token,
-          file,
-          selectedCvsFolderId,
-        );
+        await uploadFileToFolder(token, file, allCVsFolderId);
+      }
+
+      // Upload only selected CVs
+      const topRankedResumes = results?.ranked_resumes?.slice(0, numCVs) || [];
+      for (const resume of topRankedResumes) {
+        const file = files.find((f) => f.name === resume.id);
+        if (file) {
+          await uploadFileToFolder(token, file, selectedCvsFolderId);
+        }
       }
       snackbar.success(`Uploaded ${files.length} file(s) to Google Drive.`);
     } catch (err) {
-      console.log("Error", err);
-      console.error("Google Drive upload failed", err);
       snackbar.error("Failed to upload to Google Drive.");
     }
   };
@@ -197,9 +198,7 @@ export default function Home() {
     try {
       const profile = await getProfile();
       if (profile) setProfile(profile);
-    } catch (err) {
-      console.error("Failed to fetch profile data", err);
-    }
+    } catch (err) {}
   };
 
   useEffect(() => {

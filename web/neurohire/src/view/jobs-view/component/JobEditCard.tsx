@@ -81,7 +81,6 @@ const JobEditForm: React.FC<JobEditFormProps> = ({ job, handleSave }) => {
       setAlert({ type: "success", message: "Job updated successfully!" });
       handleSave();
     } catch (error) {
-      console.error("Error updating job data:", error);
       setAlert({
         type: "error",
         message: "Failed to update job. Please try again.",

@@ -24,7 +24,6 @@ export function JobProvider({ children }: any) {
       const jobsData = await getJobs();
       setJobs(jobsData);
     } catch (error) {
-      console.error("Failed to fetch jobs data.");
     } finally {
       setJobsLoading(false);
     }
@@ -35,13 +34,10 @@ export function JobProvider({ children }: any) {
     try {
       const response = await createJob(jobData);
       if (response) {
-        console.log("Job created successfully:", response);
         setJobs((prevJobs: any) => [...prevJobs, response]);
       } else {
-        console.error("Failed to create job");
       }
     } catch (error) {
-      console.error("Failed to create job:", error);
     } finally {
       setJobsLoading(false);
     }
@@ -52,15 +48,12 @@ export function JobProvider({ children }: any) {
     try {
       const response = await updateJob(jobId, jobData);
       if (response.job_id) {
-        console.log("Job updated successfully:", response);
         setJobs((prevJobs: any) =>
           prevJobs.map((j: any) => (j.job_id === jobId ? response : j)),
         );
       } else {
-        console.error("Failed to update job");
       }
     } catch (error) {
-      console.error("Failed to update job:", error);
     } finally {
       setJobsLoading(false);
     }

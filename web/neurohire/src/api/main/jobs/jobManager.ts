@@ -5,7 +5,6 @@ Licensed under the MIT License.
 See LICENSE file in the project root for full license information.
 */
 
-
 import { fetchApi } from "../../index";
 
 export async function getJobs() {
@@ -13,7 +12,6 @@ export async function getJobs() {
     const jobsData = await fetchApi("http://localhost:3005/api/job/", "GET");
     return jobsData;
   } catch (error) {
-    console.error("Failed to fetch jobs data.");
     throw error;
   }
 }
@@ -27,14 +25,11 @@ export async function createJob(jobData: any) {
     );
     return response;
   } catch (error) {
-    console.error("Failed to create job.");
     throw error;
   }
 }
 
 export async function updateJob(jobId: string, jobData: any) {
-  console.log("Updating job with ID:", jobId);
-  console.log("Job data:", jobData);
   try {
     const response = await fetchApi(
       `http://localhost:3005/api/job/${jobId}`,
@@ -43,7 +38,6 @@ export async function updateJob(jobId: string, jobData: any) {
     );
     return response;
   } catch (error) {
-    console.error("Failed to update job.");
     throw error;
   }
 }

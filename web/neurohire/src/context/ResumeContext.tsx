@@ -22,6 +22,7 @@ export function ResumeProvider({ children }: any) {
   const [filePreviews, setFilePreviews] = useState<
     { name: string; src: string | null }[]
   >([]);
+  const [numCVs, setNumCVs] = useState<number>(1);
 
   function getTopicByActiveStep(step: number) {
     switch (step) {
@@ -52,6 +53,8 @@ export function ResumeProvider({ children }: any) {
         activeStep,
         setActiveStep,
         getTopicByActiveStep,
+        numCVs,
+        setNumCVs,
       }}
     >
       {children}

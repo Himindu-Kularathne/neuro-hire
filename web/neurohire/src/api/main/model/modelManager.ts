@@ -8,18 +8,17 @@ See LICENSE file in the project root for full license information.
 import { fetchApi } from "../../index";
 
 export async function processResumes(body: any): Promise<any> {
-  if (!body ) {
+  if (!body) {
     throw new Error("Invalid body: Body cannot be null or undefined.");
   }
   try {
     const result = await fetchApi(
       "http://localhost:3005/api/resumes/process",
       "POST",
-      body
+      body,
     );
     return result;
   } catch (error) {
-    console.error("Failed to process resumes:", error);
     throw error;
   }
 }

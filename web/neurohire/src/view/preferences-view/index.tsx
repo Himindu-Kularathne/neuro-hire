@@ -58,14 +58,12 @@ const PreferencesView: React.FC = () => {
         email: registerForm.email,
         role: registerForm.role,
       });
-      console.log("Invite response:", response);
       setSnackbar({
         open: true,
         message: "User invited successfully!",
         severity: "success",
       });
     } catch (error) {
-      console.error("Error inviting user:", error);
       setSnackbar({
         open: true,
         message: "Failed to invite user.",
