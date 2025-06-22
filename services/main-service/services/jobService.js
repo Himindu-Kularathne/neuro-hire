@@ -137,7 +137,6 @@ const updateJob = async (jobId, jobData) => {
 };
 
 const deleteJob = async (jobId) => {
-  console.log("Deleting job with ID:", jobId);
   const conn = await db.getConnection();
   try {
     await conn.beginTransaction();

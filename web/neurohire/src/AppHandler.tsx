@@ -61,7 +61,6 @@ const AppHandler: React.FC = () => {
           await refreshAccessToken(); // this should store new access token
           setIsAuthenticated(true);
         } catch (err) {
-          console.error("Error refreshing token:", err);
           localStorage.removeItem("refreshToken");
           setIsAuthenticated(false);
         }

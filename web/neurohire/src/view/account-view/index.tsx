@@ -35,9 +35,7 @@ const CompanyProfileView: React.FC = () => {
 
   const { profile } = useUser();
 
-  useEffect(() => {
-    console.log(profile);
-  }, [profile]);
+  useEffect(() => {}, [profile]);
 
   return (
     <Box sx={{ p: 4 }}>

@@ -27,7 +27,6 @@ const rankResumes = async (payload) => {
     const rankedResumeIds = await rankedResumeResponse.json();
     return rankedResumeIds;
   } catch (error) {
-    console.error("Error ranking resumes:", error);
     throw error;
   }
 };
