@@ -1,3 +1,10 @@
+/*
+Copyright (c) 2025 Neuro Hire
+
+Licensed under the MIT License.
+See LICENSE file in the project root for full license information.
+*/
+
 import React, { useEffect } from "react";
 import { Grid, Container } from "@mui/material";
 import JobCard from "./component/JobCard";

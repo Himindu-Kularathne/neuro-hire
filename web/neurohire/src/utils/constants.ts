@@ -1,3 +1,10 @@
+/*
+Copyright (c) 2025 Neuro Hire
+
+Licensed under the MIT License.
+See LICENSE file in the project root for full license information.
+*/
+
 export const APP_DATA = {
   APP_NAME: "NeuroHire",
   APP_VERSION: "1.0.0",
