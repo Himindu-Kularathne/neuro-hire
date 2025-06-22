@@ -1,13 +1,15 @@
-const express = require('express');
-require('dotenv').config();
-const cors = require('cors');
-const authRoutes = require('./routes/authRoutes');
+const express = require("express");
+require("dotenv").config();
+const cors = require("cors");
+const authRoutes = require("./routes/authRoutes");
+const inviteRoutes = require("./routes/inviteRoutes");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/auth', authRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/invite", inviteRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);

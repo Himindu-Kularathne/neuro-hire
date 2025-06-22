@@ -1,102 +1,124 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import List
+from typing import List, Dict
+import os
 
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_chroma import Chroma
-from langchain.schema.output_parser import StrOutputParser
 from langchain_google_genai import GoogleGenerativeAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.docstore.document import Document
-import os
-from dotenv import load_dotenv
+from langchain.schema.output_parser import StrOutputParser
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import FAISS
+import json
+import re
+# Set your API key (ensure it is securely loaded in production)
+os.environ["GOOGLE_API_KEY"] = "<Api Key>"
 
-load_dotenv()
-
-google_api_key = os.getenv("GOOGLE_API_KEY")
-
-# Define request and response models
+# Define request schema
 class Resume(BaseModel):
     id: str
     content: str
 
-class RequestBody(BaseModel):
-    jobDescription: str
+class RankRequest(BaseModel):
+    job_description: str
+    tags: List[str]
     resumes: List[Resume]
 
-class ResponseBody(BaseModel):
-    ranked_ids: List[str]
+class RankedResume(BaseModel):
+    id: str
+    content: str
+    score: float
+    reason: str  # add this
+
+class RankResponse(BaseModel):
+    ranked_resumes: List[RankedResume]
 
 # Initialize FastAPI app
 app = FastAPI()
 
-# Initialize components once
-embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
-
-llm = GoogleGenerativeAI(
-    model="models/gemini-1.5-pro-latest",
-    google_api_key=google_api_key,  # Replace with secure loading in prod
-    temperature=0.1,
-    max_output_tokens=500,
-)
-
-output_parser = StrOutputParser()
-
-template = """
-Given a job description, identify how relevant the CV is based on the provided context.
+# Prompt Template
+prompt_template = ChatPromptTemplate.from_template(
+    """
+You are a helpful assistant tasked with ranking resumes.
 
 Job Description:
-{question}
+{job_description}
 
-CV Content:
-{context}
+Tags:
+{tags}
 
-Relevance (highly relevant, somewhat relevant, not relevant):
+Given the following resumes:
+{resumes}
+
+Rank the resumes from most to least relevant.
+
+Return a valid JSON array with the following format, and **only return the JSON**: Dont add any additional text or explanation.
+Response should be a list of objects with the following fields: Starting from [ and should end with ].
+
+[
+  {{
+    "id": "<resume_id>",
+    "score": <score_float>,
+    "reason": "<Explanation in Markdown format - Should be in two or more sub topics with headings and bullet points.>",
+  }},
+  ...
+]
 """
-
-prompt = ChatPromptTemplate.from_template(template)
-
-chain = (
-    {"context": RunnablePassthrough(), "question": RunnablePassthrough()}
-    | prompt
-    | llm
-    | output_parser
 )
 
-@app.post("/rank-resumes", response_model=ResponseBody)
-def rank_resumes(request: RequestBody):
+# LLM
+llm = GoogleGenerativeAI(model="gemini-2.5-flash")
+
+# Chain
+chain = (
+    {
+        "job_description": RunnablePassthrough(),
+        "tags": RunnablePassthrough(),
+        "resumes": RunnablePassthrough()
+    }
+    | prompt_template
+    | llm
+    | StrOutputParser()
+)
+
+@app.post("/rank", response_model=RankResponse)
+async def rank_resumes(data: RankRequest):
     try:
-        # Convert to langchain Documents
-        documents = [
-            Document(page_content=resume.content, metadata={"id": resume.id})
-            for resume in request.resumes
-        ]
+        resumes_input = "\n".join([f"{resume.id}: {resume.content}" for resume in data.resumes])
 
-        # Optional: split for better embedding chunking
-        splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=50)
-        split_docs = splitter.split_documents(documents)
+        response = chain.invoke({
+            "job_description": data.job_description,
+            "tags": ", ".join(data.tags),
+            "resumes": resumes_input
+        })
 
-        # DEBUG: print out split_docs metadata
-        for doc in split_docs:
-            print(doc.metadata)  # Should contain 'id'
+        print("LLM Response:", response)  # Debugging output
+      # Clean LLM response: strip markdown code block and extra text
+        cleaned_response = re.sub(r"^.*?```json\s*|\s*```.*$", "", response.strip(), flags=re.DOTALL)
+        print("Cleaned Response:", cleaned_response)  # Debugging output
+        try:
+            parsed = json.loads(cleaned_response)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=500, detail="LLM did not return valid JSON")
 
-        # Vectorstore and retrieval
-        vectorstore = Chroma.from_documents(split_docs, embedding=embedding_model)
-        retriever = vectorstore.as_retriever(search_kwargs={"k": len(request.resumes)})
+        print("Parsed Response:", parsed)  # Debugging output
 
-        # Retrieve based on job description
-        retrieved_docs = retriever.get_relevant_documents(request.jobDescription)  # Use get_relevant_documents instead of invoke
+        ranked_resumes = []
+        for result in parsed:
+            resume = next((r for r in data.resumes if r.id == result["id"]), None)
+            if resume:
+                ranked_resumes.append({
+                    "id": resume.id,
+                    "content": resume.content,
+                    "score": float(result["score"]),
+                    "reason": result.get("reason", "No reason provided")  # safely add reason
+                })
 
-        ranked_ids_with_scores = [
-            {"id": doc.metadata["id"], "score": doc.metadata.get("score", "n/a")}
-            for doc in retrieved_docs
-        ]
-        # Rank documents based on similarity (optional scoring step if needed)
-        ranked_ids = [doc.metadata["id"] for doc in retrieved_docs]  # If you have a score, you could sort this list
 
-        return ResponseBody(ranked_ids=ranked_ids)
-    
+
+        ranked_resumes = sorted(ranked_resumes, key=lambda x: x["score"], reverse=True)
+
+        return {"ranked_resumes": ranked_resumes}
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing request: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))

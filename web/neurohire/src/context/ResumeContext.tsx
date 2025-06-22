@@ -10,9 +10,26 @@ export function useResume() {
 export function ResumeProvider({ children }: any) {
   const [resumes, setResumes] = useState<IResume[]>([]);
   const [selectedJob, setSelectedJob] = useState<any>(null);
+  const [finalResults, setFinalResults] = useState<any>(null);
+  const [activeStep, setActiveStep] = useState<number>(0);
   const [filePreviews, setFilePreviews] = useState<
     { name: string; src: string | null }[]
   >([]);
+
+  function getTopicByActiveStep(step: number) {
+    switch (step) {
+      case 0:
+        return "Upload Resumes";
+      case 1:
+        return "Select Job";
+      case 2:
+        return "Preview";
+      case 3:
+        return "Results";
+      default:
+        return "";
+    }
+  }
 
   return (
     <ResumeContext.Provider
@@ -23,6 +40,11 @@ export function ResumeProvider({ children }: any) {
         setSelectedJob,
         filePreviews,
         setFilePreviews,
+        finalResults,
+        setFinalResults,
+        activeStep,
+        setActiveStep,
+        getTopicByActiveStep,
       }}
     >
       {children}

@@ -26,6 +26,7 @@ import {
   uploadFileToFolder,
 } from "../gdrive-view/googleDriveHelpers";
 import { useSnackbar } from "../../utils/snackbar";
+import { processResumes } from "../../api/main/model/modelManager";
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -39,11 +40,18 @@ interface FilePreview {
 
 export default function Home() {
   const snackbar = useSnackbar();
-  const [activeStep, setActiveStep] = useState(0);
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
-  const { setResumes, filePreviews, setFilePreviews, selectedJob } =
-    useResume();
+  const {
+    setResumes,
+    filePreviews,
+    setFilePreviews,
+    selectedJob,
+    setFinalResults,
+    activeStep,
+    setActiveStep,
+    getTopicByActiveStep,
+  } = useResume();
   const { setProfile } = useUser();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -104,17 +112,41 @@ export default function Home() {
         extractedData.push({ resume_id: file.name, text });
       }
       setResumes(extractedData);
-      setActiveStep(1); // Go to "Select Job"
+      setActiveStep(1);
     } catch (error) {
       console.error("Error extracting resume:", error);
     }
     setLoading(false);
   };
 
+  // final process resumes
+  const handleProcessResumes = async () => {
+    try {
+      const body = {
+        job_description: selectedJob.description,
+        tags: selectedJob.skills_required,
+        resumes: filePreviews.map((file: any) => ({
+          id: file.name,
+          content: file.src ? file.src : "",
+        })),
+      };
+      console.log("Processing resumes with body:", body);
+      const result = await processResumes(body);
+      if (result) {
+        console.log("Resumes processed successfully:", result);
+        setFinalResults(result);
+        snackbar.success("Resumes processed successfully.");
+      }
+    } catch (error) {
+      console.error("Error processing resumes:", error);
+      snackbar.error("Failed to process resumes.");
+    }
+  };
+
   const handleFinalSubmit = () => {
-    // submit to the backend
-    setActiveStep(3); // Go to results
+    setActiveStep(3);
     handleGoogleDrive();
+    handleProcessResumes();
   };
 
   const handleGoogleDrive = async () => {
@@ -180,7 +212,7 @@ export default function Home() {
         gutterBottom
         align="center"
       >
-        Resume Screening Steps
+        {getTopicByActiveStep(activeStep)}
       </Typography>
 
       <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
@@ -191,14 +223,15 @@ export default function Home() {
         ))}
       </Stepper>
 
-      <Paper
-        elevation={3}
-        sx={{
-          p: 3,
-          margin: "30px",
-          borderRadius: 2,
-          justifyItems: "center",
-          height: "100%",
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          padding: "20px",
+          boxSizing: "border-box",
         }}
       >
         {/* Step Components */}
@@ -225,7 +258,7 @@ export default function Home() {
           />
         )}
         {activeStep === 3 && <StepResult />}
-      </Paper>
+      </div>
     </Box>
   );
 }
