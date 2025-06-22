@@ -1,6 +1,8 @@
 # Neuro Hire
 
-AI-powered resume screening and ranking system for recruiters and job seekers.
+NeuroHire is an AI-powered resume screening and ranking platform designed to streamline the hiring process. Built with a modular microservices architecture, it leverages natural language processing and semantic search to evaluate candidate resumes against job descriptions with precision and efficiency.
+
+This open-source edition enables organizations and developers to customize, extend, and integrate the core capabilities into their own recruitment pipelines.
 
 ![MIT License](https://img.shields.io/badge/license-MIT-green)
 
