@@ -27,6 +27,7 @@ import {
 } from "../gdrive-view/googleDriveHelpers";
 import { useSnackbar } from "../../utils/snackbar";
 import { processResumes } from "../../api/main/model/modelManager";
+import { useJob } from "../../context/JobContext";
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -53,6 +54,7 @@ export default function Home() {
     getTopicByActiveStep,
   } = useResume();
   const { setProfile } = useUser();
+  const { fetchJobsData } = useJob();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
@@ -195,6 +197,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchProfileData();
+    fetchJobsData();
   }, []);
 
   return (
