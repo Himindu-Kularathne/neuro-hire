@@ -238,7 +238,7 @@ const StepUpload: React.FC<Props> = ({
                 variant="contained"
                 color="primary"
                 onClick={onSubmit}
-                disabled={loading}
+                disabled={loading || files.length <= 1}
                 sx={{
                   px: 5,
                   py: 1.5,
