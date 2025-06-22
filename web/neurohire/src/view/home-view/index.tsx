@@ -123,9 +123,7 @@ export default function Home() {
       }
       setResumes(extractedData);
       setActiveStep(1);
-    } catch (error) {
-      console.error("Error extracting resume:", error);
-    }
+    } catch (error) {}
     setLoading(false);
   };
 
@@ -140,16 +138,13 @@ export default function Home() {
           content: file.src ? file.src : "",
         })),
       };
-      console.log("Processing resumes with body:", body);
       const result = await processResumes(body);
       if (result) {
-        console.log("Resumes processed successfully:", result);
         setFinalResults(result);
         snackbar.success("Resumes processed successfully.");
         return result;
       }
     } catch (error) {
-      console.error("Error processing resumes:", error);
       snackbar.error("Failed to process resumes.");
     }
   };
@@ -163,7 +158,6 @@ export default function Home() {
   };
 
   const handleGoogleDrive = async (results: any) => {
-    console.log("Job name", selectedJob.job_name);
     const token = localStorage.getItem("access_token");
     if (!token) {
       alert("You must sign in with Google first.");
@@ -196,8 +190,6 @@ export default function Home() {
       }
       snackbar.success(`Uploaded ${files.length} file(s) to Google Drive.`);
     } catch (err) {
-      console.log("Error", err);
-      console.error("Google Drive upload failed", err);
       snackbar.error("Failed to upload to Google Drive.");
     }
   };
@@ -206,9 +198,7 @@ export default function Home() {
     try {
       const profile = await getProfile();
       if (profile) setProfile(profile);
-    } catch (err) {
-      console.error("Failed to fetch profile data", err);
-    }
+    } catch (err) {}
   };
 
   useEffect(() => {

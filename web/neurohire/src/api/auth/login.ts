@@ -5,7 +5,6 @@ Licensed under the MIT License.
 See LICENSE file in the project root for full license information.
 */
 
-
 import { fetchApi } from "../index";
 
 export async function login(email: string, password: string) {
@@ -26,11 +25,9 @@ export async function login(email: string, password: string) {
       localStorage.setItem("accessToken", responseData.accessToken);
       // localStorage.setItem("user", JSON.stringify(responseData.user));
     } else {
-      console.warn("Login response missing accessToken or user");
     }
     return responseData;
   } catch (error: any) {
-    console.error("Login failed:", error.message);
     throw error;
   }
 }
@@ -52,11 +49,9 @@ export async function refreshAccessToken() {
     if (responseData?.accessToken) {
       localStorage.setItem("accessToken", responseData.accessToken);
     } else {
-      console.warn("Refresh token response missing accessToken");
     }
     return responseData;
   } catch (error: any) {
-    console.error("Failed to refresh access token:", error.message);
     throw error;
   }
 }
