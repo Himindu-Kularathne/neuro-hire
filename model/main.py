@@ -16,6 +16,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 import json
 import re
+
 # Set your API key (ensure it is securely loaded in production)
 os.environ["GOOGLE_API_KEY"] = "<Api Key>"
 
