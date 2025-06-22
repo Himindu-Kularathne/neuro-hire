@@ -45,7 +45,7 @@ This open-source edition enables organizations and developers to customize, exte
 ```bash
 # Clone the repository
 git@github.com:Himindu-Kularathne/neuro-hire.git
-cd resume-screening-system
+cd neuro-hire
 
 # Install frontend dependencies
 cd web/neurohire
