@@ -7,6 +7,7 @@ import ModelPreferences from "./components/ModelPreferences";
 import NotificationPreferences from "./components/NotificationPreferences";
 import RegisterUser from "./components/RegisterUser";
 import GDriveIntegration from "./components/GDriveIntegration";
+import { inviteUsers } from "../../api/main/invite/inviteManager";
 const PreferencesView: React.FC = () => {
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -32,7 +33,7 @@ const PreferencesView: React.FC = () => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handledRegister = () => {
+  const handledRegister = async () => {
     const { username, email, role } = registerForm;
 
     if (!username || !email || !role) {
@@ -44,13 +45,26 @@ const PreferencesView: React.FC = () => {
       return;
     }
 
-    console.log("Registering user:", registerForm);
-
-    setSnackbar({
-      open: true,
-      message: `Registration email send to ${email} with role ${role}`,
-      severity: "success",
-    });
+    try {
+      const response = await inviteUsers({
+        userName: registerForm.username,
+        email: registerForm.email,
+        role: registerForm.role,
+      });
+      console.log("Invite response:", response);
+      setSnackbar({
+        open: true,
+        message: "User invited successfully!",
+        severity: "success",
+      });
+    } catch (error) {
+      console.error("Error inviting user:", error);
+      setSnackbar({
+        open: true,
+        message: "Failed to invite user.",
+        severity: "error",
+      });
+    }
 
     setRegisterForm({ username: "", email: "", role: "Recruiter" });
   };
@@ -88,7 +102,7 @@ const PreferencesView: React.FC = () => {
         <ProfilePreferences />
       </Section>
 
-      <Section
+      {/* <Section
         title="Model Preferences"
         open={openSections.model}
         toggle={() => toggleSection("model")}
@@ -102,7 +116,7 @@ const PreferencesView: React.FC = () => {
         toggle={() => toggleSection("notifications")}
       >
         <NotificationPreferences />
-      </Section>
+      </Section> */}
 
       <Section
         title="Register New User"
