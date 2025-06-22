@@ -1,4 +1,10 @@
-// middlewares/attachProfileId.js
+/*
+Copyright (c) 2025 Neuro Hire
+
+Licensed under the MIT License.
+See LICENSE file in the project root for full license information.
+*/
+
 const db = require("../db/mysql");
 
 const attachProfileId = async (req, res, next) => {

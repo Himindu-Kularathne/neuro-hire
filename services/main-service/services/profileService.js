@@ -1,4 +1,11 @@
-const db = require('../db/mysql');
+/*
+Copyright (c) 2025 Neuro Hire
+
+Licensed under the MIT License.
+See LICENSE file in the project root for full license information.
+*/
+
+const db = require("../db/mysql");
 
 const insertProfile = async (profile) => {
   const query = `
@@ -16,7 +23,7 @@ const insertProfile = async (profile) => {
     profile.profile_website,
     profile.profile_address,
     profile.profile_logo,
-    profile.profile_banner
+    profile.profile_banner,
   ];
 
   const [result] = await db.execute(query, values);
@@ -24,19 +31,19 @@ const insertProfile = async (profile) => {
 };
 
 const getAllProfiles = async () => {
-    const query = 'SELECT * FROM profile';
-    const [rows] = await db.execute(query);
-    return rows;
- }
+  const query = "SELECT * FROM profile";
+  const [rows] = await db.execute(query);
+  return rows;
+};
 
 const getProfile = async (profileId) => {
-    const query = 'SELECT * FROM profile WHERE profile_id = ?';
-    const [rows] = await db.execute(query, [profileId]);
-    return rows[0];
-}
+  const query = "SELECT * FROM profile WHERE profile_id = ?";
+  const [rows] = await db.execute(query, [profileId]);
+  return rows[0];
+};
 
 const updateProfile = async (profileId, profile) => {
-    const query = `
+  const query = `
         UPDATE profile SET
             profile_name = ?,
             profile_description = ?,
@@ -49,26 +56,32 @@ const updateProfile = async (profileId, profile) => {
         WHERE profile_id = ?
     `;
 
-    const values = [
-        profile.profile_name,
-        profile.profile_description,
-        profile.profile_email,
-        profile.profile_phone,
-        profile.profile_website,
-        profile.profile_address,
-        profile.profile_logo,
-        profile.profile_banner,
-        profileId
-    ];
+  const values = [
+    profile.profile_name,
+    profile.profile_description,
+    profile.profile_email,
+    profile.profile_phone,
+    profile.profile_website,
+    profile.profile_address,
+    profile.profile_logo,
+    profile.profile_banner,
+    profileId,
+  ];
 
-    const [result] = await db.execute(query, values);
-    return result.affectedRows > 0;
-}
+  const [result] = await db.execute(query, values);
+  return result.affectedRows > 0;
+};
 
 const deleteProfile = async (profileId) => {
-    const query = 'UPDATE profile SET active = 0 WHERE profile_id = ?';
-    const [result] = await db.execute(query, [profileId]);
-    return result.affectedRows > 0;
-}
+  const query = "UPDATE profile SET active = 0 WHERE profile_id = ?";
+  const [result] = await db.execute(query, [profileId]);
+  return result.affectedRows > 0;
+};
 
-module.exports = { insertProfile , getAllProfiles, getProfile, updateProfile, deleteProfile };
+module.exports = {
+  insertProfile,
+  getAllProfiles,
+  getProfile,
+  updateProfile,
+  deleteProfile,
+};
