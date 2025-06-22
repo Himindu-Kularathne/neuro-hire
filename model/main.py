@@ -1,3 +1,8 @@
+# Copyright (c) 2025 Neuro Hire
+#
+# Licensed under the MIT License.
+# See LICENSE file in the project root for full license information.
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict
@@ -11,6 +16,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 import json
 import re
+
 # Set your API key (ensure it is securely loaded in production)
 os.environ["GOOGLE_API_KEY"] = "<Api Key>"
 
@@ -59,7 +65,12 @@ Response should be a list of objects with the following fields: Starting from [ 
   {{
     "id": "<resume_id>",
     "score": <score_float>,
-    "reason": "<Explanation in Markdown format - Should be in two or more sub topics with headings and bullet points.>",
+    "reason": "<Explanation in Markdown format
+      - Should be in One or more sub topics with headings and bullet points.
+      - Use Emojis to highlight key points
+      - Should only contain the things that are relevant to resume Note: Dont add any additional text or explanation
+      - If you feel the resume is not relevant, Say "Not Relevant" in the reason field and mention what fields are missing or not relevant to the job description
+      >",
   }},
   ...
 ]

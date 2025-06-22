@@ -1,5 +1,12 @@
+/*
+Copyright (c) 2025 Neuro Hire
+
+Licensed under the MIT License.
+See LICENSE file in the project root for full license information.
+*/
+
 import React from "react";
-import { RouteObject, NonIndexRouteObject } from "react-router-dom";
+import { NonIndexRouteObject } from "react-router-dom";
 import { View } from "./view";
 
 export interface RouteObjectWithRole extends NonIndexRouteObject {
@@ -12,13 +19,6 @@ export interface RouteObjectWithRole extends NonIndexRouteObject {
 }
 
 export const routes: RouteObjectWithRole[] = [
-  // {
-  //   path: "/",
-  //   text: "Collections",
-  //   icon: undefined,
-  //   element: React.createElement(View.firstView),
-  //   allowRoles: [],
-  // },
   {
     path: "/",
     text: "Home",
@@ -47,25 +47,11 @@ export const routes: RouteObjectWithRole[] = [
     element: React.createElement(View.preferencesView),
     allowRoles: [],
   },
-  // {
-  //   path: "/my-account/notifications",
-  //   text: "Notifications",
-  //   icon: undefined,
-  //   element: React.createElement(View.notificationsView),
-  //   allowRoles: [],
-  // },
   {
     path: "/jobs/add",
     text: "Add Job",
     icon: undefined,
     element: React.createElement(View.addJobView),
-    allowRoles: [],
-  },
-  {
-    path: "/gdrive",
-    text: "GDrive",
-    icon: undefined,
-    element: React.createElement(View.gDriveView),
     allowRoles: [],
   },
 ];

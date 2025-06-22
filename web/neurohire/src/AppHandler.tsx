@@ -1,3 +1,10 @@
+/*
+Copyright (c) 2025 Neuro Hire
+
+Licensed under the MIT License.
+See LICENSE file in the project root for full license information.
+*/
+
 import React, { useEffect, useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Error from "./pages/not-found/404";

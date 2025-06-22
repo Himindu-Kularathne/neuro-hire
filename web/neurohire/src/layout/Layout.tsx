@@ -1,11 +1,12 @@
-import { Suspense, useEffect, useState } from "react";
-import {
-  Outlet,
-  useLocation,
-  useNavigate,
-  matchRoutes,
-} from "react-router-dom";
-import { routes } from "../routes";
+/*
+Copyright (c) 2025 Neuro Hire
+
+Licensed under the MIT License.
+See LICENSE file in the project root for full license information.
+*/
+
+import { Suspense } from "react";
+import { Outlet } from "react-router-dom";
 import AppHeader from "./header/Header";
 
 export default function Layout() {
