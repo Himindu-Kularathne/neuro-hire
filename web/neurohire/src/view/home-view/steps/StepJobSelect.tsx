@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Card,
@@ -7,6 +7,7 @@ import {
   CircularProgress,
   Grid,
   Button,
+  TextField,
 } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -25,6 +26,12 @@ interface JobListProps {
 export default function JobList({ onNext, onPrev }: JobListProps) {
   const { jobs, fetchJobsData, jobsLoading } = useJob();
   const { selectedJob, setSelectedJob } = useResume();
+  const [numCVs, setNumCVs] = useState(1);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(event.target.value, 10);
+    setNumCVs(value >= 1 ? value : 1); // Ensure at least 1
+  };
 
   const navigate = useNavigate();
 
@@ -67,15 +74,34 @@ export default function JobList({ onNext, onPrev }: JobListProps) {
 
   return (
     <Box sx={{ p: 2 }}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        flexWrap="wrap"
+        gap={2}
+        mb={3}
       >
-        <Typography variant="h5" fontWeight="bold" gutterBottom>
-          Select a Job
-        </Typography>
-      </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <Typography variant="h5" fontWeight="bold" gutterBottom>
+            Select a Job
+          </Typography>
+        </motion.div>
+
+        <TextField
+          label="Successful CVs Required"
+          type="number"
+          inputProps={{ min: 1 }}
+          value={numCVs}
+          onChange={handleChange}
+          size="small"
+          sx={{ width: "200px" }}
+        />
+      </Box>
 
       <Grid
         container

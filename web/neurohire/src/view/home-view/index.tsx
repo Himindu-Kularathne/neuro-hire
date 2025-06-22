@@ -27,6 +27,7 @@ import {
 } from "../gdrive-view/googleDriveHelpers";
 import { useSnackbar } from "../../utils/snackbar";
 import { processResumes } from "../../api/main/model/modelManager";
+import { useJob } from "../../context/JobContext";
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -53,6 +54,7 @@ export default function Home() {
     getTopicByActiveStep,
   } = useResume();
   const { setProfile } = useUser();
+  const { fetchJobsData } = useJob();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
@@ -64,6 +66,9 @@ export default function Home() {
       prevPreviews.filter((p) => p.name !== fileName),
     );
   };
+
+  const { finalResults } = useResume();
+  const rankedResumes = finalResults?.ranked_resumes || [];
 
   const generatePreviews = async () => {
     const previews = await Promise.all(
@@ -132,7 +137,6 @@ export default function Home() {
       };
       console.log("Processing resumes with body:", body);
       const result = await processResumes(body);
-      console.log("Result: ", result);
       if (result) {
         console.log("Resumes processed successfully:", result);
         setFinalResults(result);
@@ -169,15 +173,17 @@ export default function Home() {
         mainFolderId,
       );
 
+      // Upload all CVs to "All CVs" folder
       for (const file of files) {
         await uploadFileToFolder(token, file, allCVsFolderId);
       }
 
-      // for (const file of files) {
-      //   if (finalResults?.ranked_ids?.includes(file.name)) {
-      //     await uploadFileToFolder(token, file, selectedCvsFolderId);
-      //   }
-      // }
+      // Upload only selected CVs
+      const topRankedId = finalResults?.ranked_ids?.[0];
+      const topFile = files.find((file) => file.name === topRankedId);
+      if (topFile) {
+        await uploadFileToFolder(token, topFile, selectedCvsFolderId);
+      }
       snackbar.success(`Uploaded ${files.length} file(s) to Google Drive.`);
     } catch (err) {
       console.log("Error", err);
@@ -197,6 +203,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchProfileData();
+    fetchJobsData();
   }, []);
 
   return (
