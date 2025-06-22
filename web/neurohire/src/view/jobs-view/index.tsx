@@ -3,7 +3,8 @@ import { Grid, Container } from "@mui/material";
 import JobCard from "./component/JobCard";
 import { useJob } from "../../context/JobContext";
 import Loader from "../../component/LoadingComponent";
-
+import Lottie from "lottie-react";
+import noJobsAnimation from "../../assets/annimations/empty.json";
 interface Job {
   job_id: string;
   job_name: string;
@@ -28,9 +29,13 @@ const Jobs: React.FC = () => {
       <Grid container spacing={3}>
         {jobsLoading ? (
           <Loader />
-        ) : ( jobs && jobs.length === 0 ? (
-          <Grid item xs={12}>
-            <h2>No jobs available</h2>
+        ) : jobs && jobs.length === 0 ? (
+          <Grid item xs={12} sx={{ textAlign: "center", mt: 5 }}>
+            <Lottie
+              animationData={noJobsAnimation}
+              loop
+              style={{ width: 450, margin: "0 auto" }}
+            />
           </Grid>
         ) : (
           jobs?.map((job: Job, index: number) => (
@@ -38,7 +43,6 @@ const Jobs: React.FC = () => {
               <JobCard job={job} />
             </Grid>
           ))
-        )
         )}
       </Grid>
     </Container>
