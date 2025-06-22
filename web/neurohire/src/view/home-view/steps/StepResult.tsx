@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -7,12 +7,13 @@ import {
   LinearProgress,
   Avatar,
   Stack,
-  useTheme,
+  Button,
 } from "@mui/material";
 import { useResume } from "../../../context/ResumeContext";
 import Lottie from "lottie-react";
 import noResultsAnimation from "../../../assets/annimations/processing.json";
 import { motion } from "framer-motion";
+import ReactMarkdown from "react-markdown";
 
 const StepResult: React.FC = () => {
   const { finalResults } = useResume();
@@ -43,8 +44,9 @@ const StepResult: React.FC = () => {
         </Typography>
       </motion.div>
 
-      <Stack spacing={3}>
+      <Stack spacing={3} maxWidth={600} margin="0 auto">
         {rankedResumes.map((resume: any, index: number) => {
+          const [showReason, setShowReason] = useState(false);
           const scorePercent = (resume.score * 100).toFixed(1);
           const fileName = resume.id;
 
@@ -56,17 +58,21 @@ const StepResult: React.FC = () => {
               transition={{ delay: index * 0.1 }}
             >
               <Card
+                elevation={4}
                 sx={{
                   p: 2,
-                  borderRadius: 4,
-                  background: "linear-gradient(145deg, #e0f7fa, #e3f2fd)",
+                  borderRadius: 3,
+                  backgroundColor: "#fafafa",
+                  cursor: "default",
+                  userSelect: "text",
                   boxShadow:
-                    "0 4px 12px rgba(33, 150, 243, 0.2), 0 6px 20px rgba(0, 0, 0, 0.05)",
-                  backdropFilter: "blur(8px)",
+                    "0 2px 6px rgba(33, 150, 243, 0.15), 0 8px 24px rgba(0, 0, 0, 0.04)",
                   transition: "transform 0.3s ease",
-                  "&:hover": {
-                    transform: "scale(1.02)",
-                  },
+                  "&:hover": { transform: "scale(1.02)" },
+
+                  maxWidth: 600,
+                  width: "100%",
+                  margin: "0 auto",
                 }}
               >
                 <CardContent>
@@ -82,14 +88,21 @@ const StepResult: React.FC = () => {
                     >
                       {fileName[0]?.toUpperCase()}
                     </Avatar>
-                    <Box>
-                      <Typography variant="h6" fontWeight="bold">
+                    <Box flexGrow={1}>
+                      <Typography variant="h6" fontWeight="bold" noWrap>
                         {fileName}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
                         Match Score: {scorePercent}%
                       </Typography>
                     </Box>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => setShowReason(!showReason)}
+                    >
+                      {showReason ? "Hide Reason" : "View Reason"}
+                    </Button>
                   </Stack>
 
                   <Box mt={2}>
@@ -107,6 +120,49 @@ const StepResult: React.FC = () => {
                       }}
                     />
                   </Box>
+
+                  {showReason && (
+                    <Box
+                      mt={3}
+                      sx={{
+                        backgroundColor: "#f9f9f9",
+                        padding: 2,
+                        borderRadius: 2,
+                        boxShadow: "inset 0 0 8px rgba(0,0,0,0.05)",
+                        fontSize: 14,
+                        lineHeight: 1.5,
+                        maxHeight: 300,
+                        overflowY: "auto",
+                        whiteSpace: "pre-wrap",
+                        width: "100%",
+                        boxSizing: "border-box",
+                      }}
+                    >
+                      <Typography
+                        variant="subtitle1"
+                        fontWeight="bold"
+                        gutterBottom
+                      >
+                        Why this match?
+                      </Typography>
+                      <ReactMarkdown
+                        components={{
+                          p: ({ node, ...props }) => (
+                            <Typography
+                              variant="body2"
+                              sx={{ mb: 0.5 }}
+                              {...props}
+                            />
+                          ),
+                          li: ({ node, ...props }) => (
+                            <li style={{ marginBottom: 2 }} {...props} />
+                          ),
+                        }}
+                      >
+                        {resume.reason}
+                      </ReactMarkdown>
+                    </Box>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
