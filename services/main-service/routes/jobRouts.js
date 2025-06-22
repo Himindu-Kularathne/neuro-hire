@@ -24,5 +24,11 @@ jobRouter.put(
   attachProfileId,
   jobController.updateJob
 );
+jobRouter.delete(
+  "/:jobId",
+  authenticateToken,
+  attachProfileId,
+  jobController.deleteJob
+);
 
 module.exports = jobRouter;

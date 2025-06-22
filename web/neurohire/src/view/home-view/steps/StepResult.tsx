@@ -41,9 +41,6 @@ const StepResult: React.FC = () => {
         <Typography variant="h4" gutterBottom fontWeight="bold" color="primary">
           🌟 Resume Ranking Results
         </Typography>
-        <Typography variant="body1" mb={3} color="text.secondary">
-          Top candidates based on AI relevance score:
-        </Typography>
       </motion.div>
 
       <Stack spacing={3}>
@@ -104,7 +101,8 @@ const StepResult: React.FC = () => {
                         borderRadius: 6,
                         backgroundColor: "#bbdefb",
                         [`& .MuiLinearProgress-bar`]: {
-                          background: "linear-gradient(to right, #2196f3, #1e88e5)",
+                          background:
+                            "linear-gradient(to right, #2196f3, #1e88e5)",
                         },
                       }}
                     />

@@ -43,7 +43,7 @@ const DraggableResumeCard = ({ preview }: { preview: any }) => {
       sx={{
         opacity: isDragging ? 0.5 : 1,
         transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
-        boxShadow: 4, // Default shadow
+        boxShadow: 4,
         "&:hover": {
           transform: "scale(1.05)",
           boxShadow: "0 8px 24px rgba(33, 150, 243, 0.3)",

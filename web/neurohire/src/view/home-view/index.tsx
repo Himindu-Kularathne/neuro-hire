@@ -40,11 +40,18 @@ interface FilePreview {
 
 export default function Home() {
   const snackbar = useSnackbar();
-  const [activeStep, setActiveStep] = useState(0);
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
-  const { setResumes, filePreviews, setFilePreviews, selectedJob, setFinalResults } =
-    useResume();
+  const {
+    setResumes,
+    filePreviews,
+    setFilePreviews,
+    selectedJob,
+    setFinalResults,
+    activeStep,
+    setActiveStep,
+    getTopicByActiveStep,
+  } = useResume();
   const { setProfile } = useUser();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -105,7 +112,7 @@ export default function Home() {
         extractedData.push({ resume_id: file.name, text });
       }
       setResumes(extractedData);
-      setActiveStep(1); 
+      setActiveStep(1);
     } catch (error) {
       console.error("Error extracting resume:", error);
     }
@@ -116,12 +123,12 @@ export default function Home() {
   const handleProcessResumes = async () => {
     try {
       const body = {
-        jobDescription : selectedJob.description,
+        jobDescription: selectedJob.description,
         resumes: filePreviews.map((file: any) => ({
           id: file.name,
-          content: file.src ? file.src : "", 
+          content: file.src ? file.src : "",
         })),
-      }
+      };
       console.log("Processing resumes with body:", body);
       const result = await processResumes(body);
       if (result) {
@@ -136,7 +143,7 @@ export default function Home() {
   };
 
   const handleFinalSubmit = () => {
-    setActiveStep(3); 
+    setActiveStep(3);
     handleGoogleDrive();
     handleProcessResumes();
   };
@@ -204,7 +211,7 @@ export default function Home() {
         gutterBottom
         align="center"
       >
-        Resume Screening Steps
+        {getTopicByActiveStep(activeStep)}
       </Typography>
 
       <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
@@ -216,16 +223,15 @@ export default function Home() {
       </Stepper>
 
       <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%",
-        padding: "20px",
-        boxSizing: "border-box",
-        
-      }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          padding: "20px",
+          boxSizing: "border-box",
+        }}
       >
         {/* Step Components */}
         {activeStep === 0 && (
