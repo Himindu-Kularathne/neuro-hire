@@ -16,10 +16,9 @@ import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 
 const StepResult: React.FC = () => {
-  console.log("Here");
   const { finalResults } = useResume();
   const rankedResumes = finalResults?.ranked_resumes || [];
-
+  console.log("Resumes: ", finalResults);
   if (rankedResumes.length === 0) {
     return (
       <Box textAlign="center" mt={4}>
@@ -44,9 +43,10 @@ const StepResult: React.FC = () => {
           🌟 Resume Ranking Results
         </Typography>
       </motion.div>
-
+      {"Final" + finalResults}
       <Stack spacing={3} maxWidth={600} margin="0 auto">
         {rankedResumes.map((resume: any, index: number) => {
+          console.log("Here", finalResults);
           const [showReason, setShowReason] = useState(false);
           const scorePercent = (resume.score * 100).toFixed(1);
           const fileName = resume.id;

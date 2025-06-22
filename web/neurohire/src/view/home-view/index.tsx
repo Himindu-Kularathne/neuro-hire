@@ -68,7 +68,6 @@ export default function Home() {
   };
 
   const { finalResults } = useResume();
-  const rankedResumes = finalResults?.ranked_resumes || [];
 
   const generatePreviews = async () => {
     const previews = await Promise.all(
@@ -141,6 +140,7 @@ export default function Home() {
         console.log("Resumes processed successfully:", result);
         setFinalResults(result);
         snackbar.success("Resumes processed successfully.");
+        return result;
       }
     } catch (error) {
       console.error("Error processing resumes:", error);
@@ -148,13 +148,15 @@ export default function Home() {
     }
   };
 
-  const handleFinalSubmit = () => {
+  const handleFinalSubmit = async () => {
     setActiveStep(3);
-    handleGoogleDrive();
-    handleProcessResumes();
+    const result = await handleProcessResumes();
+    if (result) {
+      await handleGoogleDrive(result);
+    }
   };
 
-  const handleGoogleDrive = async () => {
+  const handleGoogleDrive = async (results: any) => {
     console.log("Job name", selectedJob.job_name);
     const token = localStorage.getItem("access_token");
     if (!token) {
@@ -179,8 +181,10 @@ export default function Home() {
       }
 
       // Upload only selected CVs
-      const topRankedId = finalResults?.ranked_ids?.[0];
+      const topRankedId = results?.ranked_resumes?.[0]?.id;
+      console.log("TopRankedId:", topRankedId);
       const topFile = files.find((file) => file.name === topRankedId);
+      console.log("Top:", topFile);
       if (topFile) {
         await uploadFileToFolder(token, topFile, selectedCvsFolderId);
       }

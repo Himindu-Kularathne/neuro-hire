@@ -50,7 +50,7 @@ export default function JobList({ onNext, onPrev }: JobListProps) {
       </Box>
     );
   }
-
+  console.log("whjattt");
   if (!jobsLoading && jobs.length === 0) {
     return (
       <Box display="flex" flexDirection="column" alignItems="center" mt={4}>
