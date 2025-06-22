@@ -25,12 +25,11 @@ interface JobListProps {
 
 export default function JobList({ onNext, onPrev }: JobListProps) {
   const { jobs, fetchJobsData, jobsLoading } = useJob();
-  const { selectedJob, setSelectedJob } = useResume();
-  const [numCVs, setNumCVs] = useState(1);
+  const { selectedJob, setSelectedJob, setNumCVs, numCVs } = useResume();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(event.target.value, 10);
-    setNumCVs(value >= 1 ? value : 1); // Ensure at least 1
+    setNumCVs(value >= 1 ? value : 1); // Update global state
   };
 
   const navigate = useNavigate();

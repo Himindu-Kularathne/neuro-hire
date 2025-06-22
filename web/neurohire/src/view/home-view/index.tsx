@@ -55,6 +55,7 @@ export default function Home() {
   } = useResume();
   const { setProfile } = useUser();
   const { fetchJobsData } = useJob();
+  const { numCVs } = useResume();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
@@ -66,8 +67,6 @@ export default function Home() {
       prevPreviews.filter((p) => p.name !== fileName),
     );
   };
-
-  const { finalResults } = useResume();
 
   const generatePreviews = async () => {
     const previews = await Promise.all(
@@ -181,12 +180,12 @@ export default function Home() {
       }
 
       // Upload only selected CVs
-      const topRankedId = results?.ranked_resumes?.[0]?.id;
-      console.log("TopRankedId:", topRankedId);
-      const topFile = files.find((file) => file.name === topRankedId);
-      console.log("Top:", topFile);
-      if (topFile) {
-        await uploadFileToFolder(token, topFile, selectedCvsFolderId);
+      const topRankedResumes = results?.ranked_resumes?.slice(0, numCVs) || [];
+      for (const resume of topRankedResumes) {
+        const file = files.find((f) => f.name === resume.id);
+        if (file) {
+          await uploadFileToFolder(token, file, selectedCvsFolderId);
+        }
       }
       snackbar.success(`Uploaded ${files.length} file(s) to Google Drive.`);
     } catch (err) {
