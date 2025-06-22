@@ -132,6 +132,7 @@ export default function Home() {
       };
       console.log("Processing resumes with body:", body);
       const result = await processResumes(body);
+      console.log("Result: ", result);
       if (result) {
         console.log("Resumes processed successfully:", result);
         setFinalResults(result);
@@ -169,13 +170,14 @@ export default function Home() {
       );
 
       for (const file of files) {
-        const fileIdAll = await uploadFileToFolder(token, file, allCVsFolderId);
-        const fileIdSelected = await uploadFileToFolder(
-          token,
-          file,
-          selectedCvsFolderId,
-        );
+        await uploadFileToFolder(token, file, allCVsFolderId);
       }
+
+      // for (const file of files) {
+      //   if (finalResults?.ranked_ids?.includes(file.name)) {
+      //     await uploadFileToFolder(token, file, selectedCvsFolderId);
+      //   }
+      // }
       snackbar.success(`Uploaded ${files.length} file(s) to Google Drive.`);
     } catch (err) {
       console.log("Error", err);
