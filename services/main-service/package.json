@@ -8,7 +8,7 @@
     "dev": "nodemon index.js"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "description": "",
   "dependencies": {
     "body-parser": "^2.2.0",
