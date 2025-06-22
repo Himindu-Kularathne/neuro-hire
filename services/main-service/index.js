@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const errorHandler = require("./middlewares/errorHandler");
 const profileRoutes = require("./routes/profileRoutes");
 const jobRouts = require("./routes/jobRouts");
+const inviteRoutes = require("./routes/inviteRoutes");
 const resumeRoutes = require("./routes/resumeRoutes");
 const cors = require("cors");
 const { log } = require("./utils/logger");
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/api/profile", profileRoutes);
 app.use("/api/job", jobRouts);
+app.use("/api/invite", inviteRoutes);
 app.use("/api/resumes", resumeRoutes);
 
 // Error Handler

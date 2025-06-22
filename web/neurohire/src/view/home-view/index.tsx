@@ -123,7 +123,8 @@ export default function Home() {
   const handleProcessResumes = async () => {
     try {
       const body = {
-        jobDescription: selectedJob.description,
+        job_description: selectedJob.description,
+        tags: selectedJob.skills_required,
         resumes: filePreviews.map((file: any) => ({
           id: file.name,
           content: file.src ? file.src : "",
