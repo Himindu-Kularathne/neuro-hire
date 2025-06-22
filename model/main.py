@@ -1,52 +1,124 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import List
-from transformers import pipeline
+from typing import List, Dict
+import os
 
-app = FastAPI()
+from langchain_google_genai import GoogleGenerativeAI
+from langchain.prompts import ChatPromptTemplate
+from langchain.schema.runnable import RunnablePassthrough
+from langchain.schema.output_parser import StrOutputParser
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import FAISS
+import json
+import re
+# Set your API key (ensure it is securely loaded in production)
+os.environ["GOOGLE_API_KEY"] = "<Api Key>"
 
-# Schemas
+# Define request schema
 class Resume(BaseModel):
     id: str
     content: str
 
-class RAGRequest(BaseModel):
-    jobDescription: str
+class RankRequest(BaseModel):
+    job_description: str
+    tags: List[str]
     resumes: List[Resume]
 
 class RankedResume(BaseModel):
     id: str
+    content: str
     score: float
+    reason: str  # add this
 
-class RankedResponse(BaseModel):
+class RankResponse(BaseModel):
     ranked_resumes: List[RankedResume]
 
-# Load Hugging Face zero-shot-classification pipeline
-classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+# Initialize FastAPI app
+app = FastAPI()
 
-@app.post("/rank", response_model=RankedResponse)
-def rank_resumes(data: RAGRequest):
+# Prompt Template
+prompt_template = ChatPromptTemplate.from_template(
+    """
+You are a helpful assistant tasked with ranking resumes.
+
+Job Description:
+{job_description}
+
+Tags:
+{tags}
+
+Given the following resumes:
+{resumes}
+
+Rank the resumes from most to least relevant.
+
+Return a valid JSON array with the following format, and **only return the JSON**: Dont add any additional text or explanation.
+Response should be a list of objects with the following fields: Starting from [ and should end with ].
+
+[
+  {{
+    "id": "<resume_id>",
+    "score": <score_float>,
+    "reason": "<Explanation in Markdown format - Should be in two or more sub topics with headings and bullet points.>",
+  }},
+  ...
+]
+"""
+)
+
+# LLM
+llm = GoogleGenerativeAI(model="gemini-2.5-flash")
+
+# Chain
+chain = (
+    {
+        "job_description": RunnablePassthrough(),
+        "tags": RunnablePassthrough(),
+        "resumes": RunnablePassthrough()
+    }
+    | prompt_template
+    | llm
+    | StrOutputParser()
+)
+
+@app.post("/rank", response_model=RankResponse)
+async def rank_resumes(data: RankRequest):
     try:
-        print("⏳ Received request to /rank resumes")
-        results = []
+        resumes_input = "\n".join([f"{resume.id}: {resume.content}" for resume in data.resumes])
 
-        for i, resume in enumerate(data.resumes):
-            print(f"🔍 Processing resume {i+1}/{len(data.resumes)} — ID: {resume.id}")
-            hypothesis = data.jobDescription
-            premise = resume.content
+        response = chain.invoke({
+            "job_description": data.job_description,
+            "tags": ", ".join(data.tags),
+            "resumes": resumes_input
+        })
 
-            result = classifier(premise, candidate_labels=[hypothesis], multi_label=False)
-            score = result["scores"][0]
-            print(f"📈 Score for Resume {resume.id}: {score:.4f}")
+        print("LLM Response:", response)  # Debugging output
+      # Clean LLM response: strip markdown code block and extra text
+        cleaned_response = re.sub(r"^.*?```json\s*|\s*```.*$", "", response.strip(), flags=re.DOTALL)
+        print("Cleaned Response:", cleaned_response)  # Debugging output
+        try:
+            parsed = json.loads(cleaned_response)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=500, detail="LLM did not return valid JSON")
 
-            results.append(RankedResume(id=resume.id, score=score))
+        print("Parsed Response:", parsed)  # Debugging output
 
-        # Sort resumes by score in descending order
-        sorted_results = sorted(results, key=lambda x: x.score, reverse=True)
-        print(f"🏁 Ranking complete. Top score: {sorted_results[0].score:.4f}")
+        ranked_resumes = []
+        for result in parsed:
+            resume = next((r for r in data.resumes if r.id == result["id"]), None)
+            if resume:
+                ranked_resumes.append({
+                    "id": resume.id,
+                    "content": resume.content,
+                    "score": float(result["score"]),
+                    "reason": result.get("reason", "No reason provided")  # safely add reason
+                })
 
-        return RankedResponse(ranked_resumes=sorted_results)
+
+
+        ranked_resumes = sorted(ranked_resumes, key=lambda x: x["score"], reverse=True)
+
+        return {"ranked_resumes": ranked_resumes}
 
     except Exception as e:
-        print("💥 Exception occurred:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
