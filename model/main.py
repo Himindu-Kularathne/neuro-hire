@@ -1,3 +1,8 @@
+# Copyright (c) 2025 Neuro Hire
+#
+# Licensed under the MIT License.
+# See LICENSE file in the project root for full license information.
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict
