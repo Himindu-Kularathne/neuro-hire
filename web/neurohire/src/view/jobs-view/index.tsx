@@ -19,9 +19,6 @@ const Jobs: React.FC = () => {
 
   useEffect(() => {
     fetchJobsData();
-    if (jobs) {
-      console.log(jobs);
-    }
   }, []);
 
   return (
