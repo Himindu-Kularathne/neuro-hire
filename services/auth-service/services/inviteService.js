@@ -77,7 +77,6 @@ const sendInvite = async (req, res) => {
       userId: result.insertId,
     });
   } catch (err) {
-    console.error("Error sending invite:", err);
     return res.status(500).json({
       message: "Failed to send invite",
       error: err.message,

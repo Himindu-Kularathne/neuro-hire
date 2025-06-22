@@ -10,12 +10,10 @@ const profileService = require("../services/profileService");
 const createProfile = async (req, res, next) => {
   try {
     const result = await profileService.insertProfile(req.body);
-    res
-      .status(201)
-      .json({
-        message: "Profile inserted successfully",
-        insertId: result.insertId,
-      });
+    res.status(201).json({
+      message: "Profile inserted successfully",
+      insertId: result.insertId,
+    });
   } catch (err) {
     next(err);
   }
@@ -62,7 +60,6 @@ const updateProfile = async (req, res, next) => {
 const deleteProfile = async (req, res, next) => {
   try {
     const profileId = req.profileId;
-    console.log(profileId);
     const deletedProfile = await profileService.deleteProfile(profileId);
     if (!deletedProfile) {
       return res.status(404).json({ message: "Profile not found" });

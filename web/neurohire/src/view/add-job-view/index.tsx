@@ -64,9 +64,7 @@ export default function AddJob() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Job Data Submitted:", jobData);
     const response = await createJob(jobData);
-    console.log("Response:", response);
     if (response) {
       console.log("Job created successfully:", response);
       setJobData({
