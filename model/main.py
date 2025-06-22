@@ -18,7 +18,7 @@ import json
 import re
 
 # Set your API key (ensure it is securely loaded in production)
-os.environ["GOOGLE_API_KEY"] = "AIzaSyB4f5T4IC582f2rqSkS9g5inahHKqRZLR0"
+os.environ["GOOGLE_API_KEY"] = "<Api-key>"
 
 # Define request schema
 class Resume(BaseModel):

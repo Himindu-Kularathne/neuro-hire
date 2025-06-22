@@ -50,7 +50,6 @@ const StepResult: React.FC = () => {
           🌟 Resume Ranking Results
         </Typography>
       </motion.div>
-      {"Final" + finalResults}
       <Stack spacing={3} maxWidth={600} margin="0 auto">
         {rankedResumes.map((resume: any, index: number) => {
           console.log("Here", finalResults);
