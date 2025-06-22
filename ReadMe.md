@@ -75,6 +75,9 @@ uvicorn main:app --reload
 
 ## Architecture Diagram
 
+![Untitled Diagram drawio](https://github.com/user-attachments/assets/e8adb8b7-c230-494f-b671-94e2b12fca8e)
+
+
 ## 🤝 Contributing
 
 We welcome contributions from the community! Whether it's a bug fix, new feature, or improvement to documentation — your help is appreciated.
