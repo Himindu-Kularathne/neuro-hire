@@ -14,6 +14,9 @@ AI-powered resume screening and ranking system for recruiters and job seekers.
   - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
+  - [Tech Stack](#tech-stack)
+  - [Architecture Diagram](#architecture-diagram)
+  - [🤝 Contributing](#-contributing)
 
 ---
 
@@ -61,3 +64,30 @@ npm run dev # for web fronted and above services
 # To run the python service (model)
 uvicorn main:app --reload
 ```
+
+## Tech Stack
+
+- **Backend:** FastAPI, LangChain, Python
+- **LLM:** Gemini, HuggingFace Transformers
+- **Vector DB:** ChromaDB / FAISS
+- **Frontend:** React, MUI
+- **Email Service:** Node.js + Nodemailer
+
+## Architecture Diagram
+
+## 🤝 Contributing
+
+We welcome contributions from the community! Whether it's a bug fix, new feature, or improvement to documentation — your help is appreciated.
+
+To contribute:
+
+1. Fork this repository
+2. Create a new branch (`git checkout -b feature/your-feature-name`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add feature: your feature name'`)
+5. Push to your fork (`git push origin feature/your-feature-name`)
+6. Submit a Pull Request
+
+Please make sure to follow our coding conventions and test your code.
+
+---
