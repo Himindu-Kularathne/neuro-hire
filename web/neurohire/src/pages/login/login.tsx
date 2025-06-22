@@ -40,6 +40,7 @@ const Login: React.FC = () => {
     try {
       const responseData = await login(email, password);
       if (responseData?.accessToken) {
+        console.log("Login successful:", responseData.accessToken);
         setIsAuthenticated(true);
         localStorage.setItem("accessToken", responseData.accessToken);
         localStorage.setItem("refreshToken", responseData.refreshToken);

@@ -79,14 +79,7 @@ export default function AddJob() {
 
   return (
     <Container maxWidth="md" sx={{ mt: 6 }}>
-      <Paper
-        elevation={4}
-        sx={{
-          p: 5,
-          borderRadius: 3,
-          backgroundColor: "#fefefe",
-        }}
-      >
+      <div>
         <Box display="flex" alignItems="center" mb={3}>
           <WorkIcon sx={{ fontSize: 30, color: "#1976d2", mr: 1 }} />
           <Typography variant="h5" fontWeight={600}>
@@ -198,7 +191,7 @@ export default function AddJob() {
             Submit Job
           </Button>
         </form>
-      </Paper>
+      </div>
     </Container>
   );
 }
