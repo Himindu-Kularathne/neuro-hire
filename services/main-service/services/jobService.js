@@ -130,19 +130,21 @@ const updateJob = async (jobId, jobData) => {
 };
 
 const deleteJob = async (jobId) => {
+  console.log("Deleting job with ID:", jobId);
   const conn = await db.getConnection();
   try {
     await conn.beginTransaction();
 
     // Delete job
     const deleteJobQuery = `DELETE FROM job WHERE job_id = ?`;
-    await conn.execute(deleteJobQuery, [jobId]);
+    const [result] = await conn.execute(deleteJobQuery, [jobId]);
 
     // Delete associated skills
     const deleteSkillsQuery = `DELETE FROM job_skills WHERE job_id = ?`;
     await conn.execute(deleteSkillsQuery, [jobId]);
 
     await conn.commit();
+    return result.affectedRows > 0;
   } catch (err) {
     await conn.rollback();
     throw err;
