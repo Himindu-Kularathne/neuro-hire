@@ -6,7 +6,6 @@ See LICENSE file in the project root for full license information.
 */
 
 import React from "react";
-import { Layout, Menu } from "antd";
 import "./NavBar.css";
 
 const Navbar: React.FC = () => {

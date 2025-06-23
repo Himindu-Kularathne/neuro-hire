@@ -6,14 +6,13 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict
-import os
-
 from langchain_google_genai import GoogleGenerativeAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
+import os
 import json
 import re
 

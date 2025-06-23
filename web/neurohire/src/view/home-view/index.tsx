@@ -1,21 +1,10 @@
-/*
-Copyright (c) 2025 Neuro Hire
+// Copyright (c) 2025 Neuro Hire
+//
+// Licensed under the MIT License.
+// See LICENSE file in the project root for full license information.
 
-Licensed under the MIT License.
-See LICENSE file in the project root for full license information.
-*/
-
-import React, { useState, useCallback, useEffect } from "react";
-import {
-  Box,
-  Typography,
-  Stepper,
-  Step,
-  StepLabel,
-  Paper,
-} from "@mui/material";
-import MuiAlert, { AlertProps } from "@mui/material/Alert";
-
+import { useState, useCallback, useEffect } from "react";
+import { Box, Typography, Stepper, Step, StepLabel } from "@mui/material";
 import * as pdfjsLib from "pdfjs-dist";
 import "pdfjs-dist/build/pdf.worker.entry";
 import { extractTextFromFile } from "../../utils/cv-parser";

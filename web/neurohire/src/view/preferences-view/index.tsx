@@ -1,17 +1,12 @@
-/*
-Copyright (c) 2025 Neuro Hire
-
-Licensed under the MIT License.
-See LICENSE file in the project root for full license information.
-*/
+// Copyright (c) 2025 Neuro Hire
+//
+// Licensed under the MIT License.
+// See LICENSE file in the project root for full license information.
 
 import React, { useState } from "react";
 import { Box, Typography, Divider, Snackbar, Alert } from "@mui/material";
-
 import Section from "./components/Section";
 import ProfilePreferences from "./components/ProfilePreferences";
-import ModelPreferences from "./components/ModelPreferences";
-import NotificationPreferences from "./components/NotificationPreferences";
 import RegisterUser from "./components/RegisterUser";
 import GDriveIntegration from "./components/GDriveIntegration";
 import { inviteUsers } from "../../api/main/invite/inviteManager";

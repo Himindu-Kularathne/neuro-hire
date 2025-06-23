@@ -1,9 +1,7 @@
-/*
-Copyright (c) 2025 Neuro Hire
-
-Licensed under the MIT License.
-See LICENSE file in the project root for full license information.
-*/
+// Copyright (c) 2025 Neuro Hire
+//
+// Licensed under the MIT License.
+// See LICENSE file in the project root for full license information.
 
 import React, { useState } from "react";
 import {
@@ -15,7 +13,6 @@ import {
   Paper,
   Divider,
   Grid,
-  Alert,
   Collapse,
   CircularProgress,
 } from "@mui/material";
