@@ -11,7 +11,7 @@ const jobRouts = require("./routes/jobRouts");
 const inviteRoutes = require("./routes/inviteRoutes");
 const resumeRoutes = require("./routes/resumeRoutes");
 const { log } = require("./utils/logger");
-const { PORT, LIMIT } = require("./constants");
+const { PORT, LIMIT } = require("./constants.js");
 
 const app = express();
 

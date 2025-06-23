@@ -55,7 +55,7 @@ const AppHeader: React.FC = () => {
     <>
       <AppBar
         position="static"
-        elevation={0}
+        elevation={3}
         sx={{ bgcolor: "#ffffff", color: "#333" }}
       >
         <Toolbar sx={{ justifyContent: "space-between" }}>
