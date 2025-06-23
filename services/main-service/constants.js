@@ -3,6 +3,5 @@
 // Licensed under the MIT License.
 // See LICENSE file in the project root for full license information.
 
-const log = (message) => {};
-
-module.exports = { log };
+export const PORT = 3005;
+export const LIMIT = "10mb";
