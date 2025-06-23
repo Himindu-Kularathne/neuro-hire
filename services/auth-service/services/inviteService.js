@@ -45,8 +45,8 @@ const sendInvite = async (req, res) => {
       port: 465,
       secure: true,
       auth: {
-        user: "himindu.21@cse.mrt.ac.lk",
-        pass: "gexf emei oyqs ewnr",
+        user: process.env.SMTP_USER || "",
+        pass: process.env.SMTP_PASS || "",
       },
       tls: {
         rejectUnauthorized: false, // optional, for some servers
