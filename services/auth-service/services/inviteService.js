@@ -55,7 +55,7 @@ const sendInvite = async (req, res) => {
 
     // Compose email
     const mailOptions = {
-      from: '"Your App" <no-reply@yourapp.com>',
+      from: '"Neuro Hire" <no-reply@yourapp.com>',
       to: email,
       subject: "You're invited to join our platform",
       html: `
