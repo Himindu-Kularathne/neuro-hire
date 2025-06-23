@@ -1,11 +1,9 @@
-/*
-Copyright (c) 2025 Neuro Hire
+// Copyright (c) 2025 Neuro Hire
+//
+// Licensed under the MIT License.
+// See LICENSE file in the project root for full license information.
 
-Licensed under the MIT License.
-See LICENSE file in the project root for full license information.
-*/
-
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Typography,
@@ -17,22 +15,7 @@ import {
 } from "@mui/material";
 import { useUser } from "../../context/UserContext";
 
-interface CompanyProfile {
-  profile_id: string;
-  profile_name: string;
-  profile_description: string;
-  profile_email: string;
-  profile_phone: string;
-  profile_website: string;
-  profile_address: string;
-  profile_logo: string;
-  active: boolean;
-}
-
 const CompanyProfileView: React.FC = () => {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
   const { profile } = useUser();
 
   useEffect(() => {}, [profile]);

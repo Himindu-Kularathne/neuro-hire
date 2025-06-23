@@ -1,15 +1,13 @@
-/*
-Copyright (c) 2025 Neuro Hire
-
-Licensed under the MIT License.
-See LICENSE file in the project root for full license information.
-*/
+// Copyright (c) 2025 Neuro Hire
+//
+// Licensed under the MIT License.
+// See LICENSE file in the project root for full license information.
 
 import { fetchApi } from "../index";
 
 export async function login(email: string, password: string) {
   if (!email || !password) {
-    throw new Error("Email and password are required");
+    throw new Error("Email and password are required!");
   }
 
   try {
@@ -23,7 +21,6 @@ export async function login(email: string, password: string) {
     );
     if (responseData?.accessToken) {
       localStorage.setItem("accessToken", responseData.accessToken);
-      // localStorage.setItem("user", JSON.stringify(responseData.user));
     } else {
     }
     return responseData;
