@@ -3,8 +3,11 @@
 // Licensed under the MIT License.
 // See LICENSE file in the project root for full license information.
 
-export const MainServiceBaseUrl = "http://localhost:3005";
-export const AuthServiceBaseUrl = "http://localhost:3001";
+const MainServiceBaseUrl = import.meta.env.VITE_MAIN_SERVICE_BASE_URL;
+const AuthServiceBaseUrl = import.meta.env.VITE_AUTH_SERVICE_BASE_URL;
+
+// export const MainServiceBaseUrl = "http://localhost:3005";
+// export const AuthServiceBaseUrl = "http://localhost:3001";
 
 export const AppConfig = {
   serviceUrls: {

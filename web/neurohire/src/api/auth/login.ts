@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 // See LICENSE file in the project root for full license information.
 
+import { AppConfig } from "../../config/config";
 import { fetchApi } from "../index";
 
 export async function login(email: string, password: string) {
@@ -12,7 +13,7 @@ export async function login(email: string, password: string) {
 
   try {
     const responseData = await fetchApi(
-      "http://localhost:3001/api/auth/login",
+      `${AppConfig.serviceUrls.auth}/login`,
       "POST",
       {
         email,
@@ -37,7 +38,7 @@ export async function refreshAccessToken() {
   }
   try {
     const responseData = await fetchApi(
-      "http://localhost:3001/api/auth/refresh",
+      `${AppConfig.serviceUrls.auth}/refresh`,
       "POST",
       {
         refreshToken,

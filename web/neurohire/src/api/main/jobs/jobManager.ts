@@ -3,11 +3,12 @@
 // Licensed under the MIT License.
 // See LICENSE file in the project root for full license information.
 
+import { AppConfig } from "../../../config/config";
 import { fetchApi } from "../../index";
 
 export async function getJobs() {
   try {
-    const jobsData = await fetchApi("http://localhost:3005/api/job/", "GET");
+    const jobsData = await fetchApi(`${AppConfig.serviceUrls.job}/`, "GET");
     return jobsData;
   } catch (error) {
     throw error;
@@ -17,7 +18,7 @@ export async function getJobs() {
 export async function createJob(jobData: any) {
   try {
     const response = await fetchApi(
-      "http://localhost:3005/api/job/",
+      `${AppConfig.serviceUrls.job}/`,
       "POST",
       jobData,
     );
@@ -30,7 +31,7 @@ export async function createJob(jobData: any) {
 export async function updateJob(jobId: string, jobData: any) {
   try {
     const response = await fetchApi(
-      `http://localhost:3005/api/job/${jobId}`,
+      `${AppConfig.serviceUrls.job}/${jobId}`,
       "PUT",
       jobData,
     );
