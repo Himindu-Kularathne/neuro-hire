@@ -1,6 +1,8 @@
 # Neuro Hire
 
-AI-powered resume screening and ranking system for recruiters and job seekers.
+NeuroHire is an AI-powered resume screening and ranking platform designed to streamline the hiring process. Built with a modular microservices architecture, it leverages natural language processing and semantic search to evaluate candidate resumes against job descriptions with precision and efficiency.
+
+This open-source edition enables organizations and developers to customize, extend, and integrate the core capabilities into their own recruitment pipelines.
 
 ![MIT License](https://img.shields.io/badge/license-MIT-green)
 
@@ -42,8 +44,8 @@ AI-powered resume screening and ranking system for recruiters and job seekers.
 
 ```bash
 # Clone the repository
-git clone git@github.com:Himindu-Kularathne/resume-screening-system.git
-cd resume-screening-system
+git@github.com:Himindu-Kularathne/neuro-hire.git
+cd neuro-hire
 
 # Install frontend dependencies
 cd web/neurohire
@@ -74,6 +76,9 @@ uvicorn main:app --reload
 - **Email Service:** Node.js + Nodemailer
 
 ## Architecture Diagram
+
+![Untitled Diagram drawio](https://github.com/user-attachments/assets/e8adb8b7-c230-494f-b671-94e2b12fca8e)
+
 
 ## 🤝 Contributing
 
