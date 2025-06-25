@@ -18,6 +18,9 @@ const app = express();
 app.use(bodyParser.json({ limit: LIMIT }));
 app.use(bodyParser.urlencoded({ limit: LIMIT, extended: true }));
 
+const cors = require("cors");
+app.use(cors({ origin: "*" })); // Enable CORS for all origins
+
 //--- health check ---
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Upstream service is healthy" });

@@ -3,6 +3,7 @@
 // Licensed under the MIT License.
 // See LICENSE file in the project root for full license information.
 
+import { AppConfig } from "../../../config/config";
 import { fetchApi } from "../../index";
 
 export async function processResumes(body: any): Promise<any> {
@@ -11,7 +12,7 @@ export async function processResumes(body: any): Promise<any> {
   }
   try {
     const result = await fetchApi(
-      "http://localhost:3005/api/resumes/process",
+      `${AppConfig.serviceUrls.resumes}/process`,
       "POST",
       body,
     );
